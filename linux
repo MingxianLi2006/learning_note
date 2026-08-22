@@ -1,0 +1,7 @@
+内核 系统库 Shell 应用程序
+vi vim command mode insert mode last line mode
+ 输入i a o I A O(insert append open)进入插入 esc从插入推出到命令 冒号进入尾行模式之后q enter退出 字母功能不同 尾行模式下wq保存并退出 write & quit
+HJKL 命令模式下为左下上右
+
+cat可输出文件内容 ls查看当前目录下文件夹和文件 -a可显示隐藏文件 -l可查看权限
+ls -a   ls -l

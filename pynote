@@ -1,0 +1,872 @@
+单引号双引号无区别
+#在windows下被忽略
+但是在linux中是内核级别命令
+#！  会被内核识别为一个脚本 #!后面的内容会作为解释器路径提取出来
+/usr/bin/env是一个专门的系统工具，用于在系统的PATH环境变量中查找某个程序
+print()中可输入多个'' ''但是要用逗号隔开，程序执行时逗号会变为一个空格。
+引号内的内容为字符串 输出不改变
+三引号可以指示一个多行的字符串
+\可用于下一行继续
+输入
+eg.让用户输入名字
+name=input()
+输入：michael
+
+if 语句
+eg. 
+#print absolute value of an integer:
+a=100
+if a >=0:
+	print(a)
+else:
+	print(-a)
+当语句以冒号结尾时，缩进的语句视为代码块
+
+字面量
+数字类型 整数int 浮点数float
+布尔bool True False
+字符串str"" ''
+三引号可换行
+空值None
+数据容器
+布尔类型本质整型True=1 False=0
+eg.True+1=2 在做计算的时候会变成数字
+
+变量 用于存储单个数据的容器
+num=101 赋值
+
+标识符 变量、函数、类的名字
+只能包含字母数字下划线且不能数字开头 区分大小写
+规范 简单明了 多部分用下划线连接 全小写
+通过type()得到数据的类型 type(要查看类型的数据)
+显示的话要print出来 <class 'str'>
+''内可能为int float bool NoneType
+通过isinstance()检查数据是否属于指定的类型，返回一个布尔值
+eg.
+num=5.0
+print(isinstance(num,int))
+#检查num 是否为int
+try是关键字
+
+单引号混乱：
+'It's very interesting'
+会出现错误，需要转义
+'It\'s very interesting' 使单引号表示他本身 \"同理
+\n换行  \t制表（tab）缩进
+
+该方法不含空格
+加号+可以拼接两个字符串
+eg.
+s1="人生苦短"
+s2="我用python"
+print("I say"+s1+","+s2)
+str()将数据类型转换为字符串
+
+占位符
+s='sloth'
+print("my name is %s"% s)
+多个变量则% (s1,s2)
+字符串格式化
+f"内容{变量/表达式}"
+s1='rskd'
+s2='I use python'
+print(f"jl said:{s1}{s2}")
+
+输入输出
+input语句获取键盘输入的数据
+s=input(”提示信息“) 得到的数据将会成为字符串！
+print(数据...)将数据输出到控制台
+
+运算符
+加减乘除+-*/ 浮点数计算可能存在精度损失，因为二进制无法准确表示所有浮点数
+整除//（10//3=3舍余数） 取余% 求幂**
+大于小于大于等于小于等于等于不等于> < >= <= = != 返回布尔值
+与或非
+赋值运算
++= -= *= ...
+num+=2  num=num+2
+
+逻辑运算符
+与and 或or 非not 连接多个布尔表达式并且返回一个布尔值
+
+流程控制语句
+#条件的结果为布尔值
+if 要判断的条件:
+	条件成立时，要执行的操作
+注意缩进
+if 要判断的条件:
+	条件成立时，执行的操作1
+else:
+	条件不成立时，执行的操作2
+
+
+if 要判断的条件1:
+        条件成立时，执行的操作1
+elif 要判断的条件2:
+	条件成立时，执行的操作2
+else:
+        条件不成立时，执行的操作3
+
+""" 
+可以是多行注释
+"""
+
+结构模式匹配
+match case
+eg.
+#工作日程安排
+day=input("请输入星期几（1-7）")
+match day:
+	case "1":
+		print("周一：工作会议日")
+	case "2"
+		print("周二：学习培训日")
+	...
+	case "6" | "7"
+		print("周末：休息日")
+	case _
+		print("输入错误")
+_匹配其他所有情况
+可在case 后加上if 条件判断
+
+循环
+while 条件表达式:
+	循环语句1
+	循环语句2
+	...
+
+while 条件表达式:
+	循环语句1
+	循环语句2
+	...
+else:
+	条件为false,循环正常结束时执行
+
+for循环
+for 元素 in 带处理数据集:
+	循环体代码（对元素进行处理）
+else:
+	循环结束时,执行的代码
+eg.
+msg="Hello-Python"
+for i in msg:
+	print(i)
+else:
+	print("循环结束")
+遍历输出字符串
+
+range语句
+生成指定规则的数字序列
+用法1：range(end) 获取一个从0开始到end结束的数字序列（不包含end本身）[0,end)
+用法2：range(start,end) start开始end结束的数字序列 [start,end)
+用法3：range(start,end,step) 从start开始end结束step步长的序列[start,end)且步长为step
+
+嵌套循环
+跳出循环break break 跳出后while后面的else不会执行
+continue 表示中断本次循环，直接进入下次循环
+生成随机数
+import random
+random_number=random.randint(a:1,b:100)    [a,b] 最好删掉ab
+生成随机整数
+
+数据存储容器
+一种可以存放多份数据的数据类型（容器），容纳的每一份数据称为一个元素，每一个元素都可以是人一的数据类型
+是否支持重复元素 是否可以修改 是否有序
+列表list 字符串str 元组tuple 集合set 字典dict
+列表
+一次性存储多个数据
+列表名称=[元素1,元素2,元素3,元素4,元素5...]
+s=[54,15,75,108,23,78,75]
+特点：可存储不同类型的元素 元素有序可重复可修改
+索引 下标从0开始
+s[0] s[1]
+对于s=[54,15,75,108,23,78,75]来说
+s[-7]==s[0]   s[6]==s[-1]反向索引 从后向前
+序列 容器中的元素按照特定顺序排列并且可以通过索引访问
+print(列表名) 可以直接print出来
+修改 s[索引]=... 可以直接修改
+删除 del s[下标]
+for item in s:
+	print(item)
+可遍历列表
+列表的切片
+切片 对操作的数据截取其中一部分的操作 列表字符串元组都支持
+序列数据[开始索引:结束索引:步长] 包含开始索引不包含结束索引 
+开始索引默认0 结束索引默认为列表长度直到末尾 步长默认1
+正反皆可
+得到一个小列表
+print(s[0:5:1])第一个冒号不可以省略，其他都可以
+方法 类似于物品具备的能力或者功能 物品称为对象
+列表的常用方法就是指列表这种数据类型内置的常见功能（添加删除排序元素）
+append() 在列表的尾部追加元素   s.append(10086)
+insert() 在指定索引之前插入该元素   s.insert(0,92)
+remove() 移除列表中第一个匹配到的值  s.remove(75)
+pop() 删除列表中指定索引位置的元素 如果未指定 则默认删除最后一个  s.pop(2)/s.pop
+sort() 对列表进行排序(升序)   s.sort()
+reverse() 反转列表元素  s.reverse()
+sum(s)对列表求和 len(s)获取元素个数/列表长度
+min() max() 
+解包 将列表这一类容器一个一个解开成独立的元素，可用于合并两个列表
+num_list1=[] 
+num_list2=[]
+new_list=[*num_list1,*num_list2]   组包 将多个值合并到一个容器
+new_list=num_list1 + num_list2
+空列表不能通过索引来赋值 可append上去或者list1=[0]*20设置固定长度先
+列表推导式 按照一定规则快速生成一个列表的方法 [要插入的值for i in 序列/列表]
+后可加条件判断   列表名称=[要插入列表的数据 for i in 列表 if 条件]
+num_list2=[i**2 for i in range(1,21)]
+num_list=[12,32,45,77,80,92,33,57,97,98,110,111,122]
+new_list=[i**2 for i in num_list if i%2==0]
+
+字符串
+字符串是字符的容器，一个字符串可以存放任意数量的字符
+无法修改 有序 可迭代（可遍历）
+存在索引 切片 操作方式与列表一致
+s="python"
+print(s[::-1])反转输出
+字符串的常用方法
+find() 在字符串中查找子串，返回第一次出现的索引位置，找不到返回-1 
+eg. s.find('Python')
+返回第一个字母所在位置对应的索引
+count() 统计字串在字符串中出现的次数
+s.count('H')
+upper() 将字符串中所有字母转换为大写 
+s.upper()
+lower() 将字符串中所有字母转换为小写
+s.lower() 不改变s需要有新的容器接收
+split() 将字符串按指定分隔符分割成列表
+s.split(' ') 去除''内的内容并且分割成多个新的字符串 放在一个新的列表里
+如果是s.split的话，效果是把字符串整个放进一个列表
+strip() 去除字符串两端的空白字符或指定字符
+s.strip()/s.strip('*') 指定字符全部去除并且分割生成新的字符串组成的列表
+replace() 将字符串中的指定字串替换为新的字串
+s.replace('H','C')
+startswith() 检查字符串是否以指定字串开头，返回布尔值
+s.startswith('P')
+endswith()
+
+元组 
+不能修改 可重复 有序 支持索引切片
+定义元组
+元组名称=(元素1,元素2,...)
+元组名称=()定义空元组
+元组名称=tuple()也可
+eg.
+t1=(5,7,9,1,2,3,10,6,4,8,12) 不加括号也可以
+t2=()
+t3=tuple()
+方法
+count() 统计某元素在元组中出现的次数
+index() 查找某个元素在元组中的索引位置（第一次出现的位置） 列表也有这个功能
+t1=(100,)单元素元组定义后面要加逗号
+组包Packing 将多个值合并到一个容器中 指列表或者元组
+解包Unpacking 将容器解开成独立元素 分别赋值给多个变量
+定义元组也是一种组包
+
+t1=5,7,9,1
+t2=5,7,9,1
+a,b,c,d=t1 基础解包
+x,*y,z=t2 x为5 y为[7,9] z为1  扩展解包
+元组解包时 *表示收集剩余的所有元素 不定数量（会生成列表）
+保留数字
+avg:.1f保留一位小数
+
+set集合
+唯一性 无序性->不支持下标索引访问 可修改
+会自动去重
+定义
+s1={"C","D","E","X"}
+空集合s2=set() 不使用大括号{}  大括号定义出来的是字典
+功能
+add()		 添加元素到集合中 s1.add("t")
+remove() 	 移除集合中的指定元素 s1.remove("t")
+pop()		随机删除集合中的元素并返回 e=s1.pop()
+clear()		清空集合	s1.clear()
+difference()	求取两个集合的差集（包含在第一个集合但不包含在第二个集合的元素） 	s1.difference(s2)
+union()		求取两个集合的并集	s1.union(s2)
+intersection()	求取两个集合的交集	s1.intersection(s2)
+&连接前后两个集合也可以求交集 甚至多个
+集合推导式
+for s in set1 if 条件
+fb_set3={for s in football_set if s not in basketball_set}
+| 连接前后两个集合，可以求并集
+集合中的元素放在列表里面
+all_list=[*football_set,*basketball_set,*french_set,*art_set]
+解包
+all_list.count(s) s 元素在all_list中出现的次数
+字典dict
+通过字/词语 找到该字对应的解释
+每个字/词语对应一个解释 不能重复 仅仅key不可重复
+python 中的字典存储的是键值对（key:value）类型的数据 可以根据键key找到对应的值value
+两个数据一一对应 并且可以修改
+定义
+dict1={"wl":670,"hl":556,"lmw":582,"zl":435,"xlg":608,"wz":512,"zz":678}
+通过键值对（key:value）来存储数据，每一个键都对应一个值，通过键（key）可以快速找到对应的值（value）
+字典名称={key:value,key:value,key:value}
+dictionary_name={}  	dict2={}
+dictionary_name=dict()	dict3=dict()
+
+get value according to key
+value=dictionary_name[key]   score=dict1["ls"]
+key cannot be modified
+common usage
+add	dictionary_name[key]=value     add key-value pair to the dictionarydicc1["tg"]=688
+delete	dictionary_name.pop(key)	delete the key and return its value   score=dict.pop("tg")	
+	del dictionary_name[key]	delete the key-value pair in dictionary 	del dict1["tg"]
+change	dictionary_name[key]=value	modify the value of the key	dict1["xz"]=658
+find      dictionary_name[key]
+	dictionary_name.get(key)       find value according to the key
+	dictionary_name.keys()		get all the keys	dict1.keys()
+	dictionary_name.values()		get all the values	dict.values()
+	dictionary_name.items()		get all the key-value pair	dict1.items()
+item操作将其转换成元组故支持索引访问
+
+函数
+组织好的、可重复使用的、用来实现特定功能的代码片段
+input() print()是python内部的函数
+定义函数
+def function_name(arguments):		def out_line():
+	function body				print('------------------------------')
+	......				
+	return return_value		返回值可有可无
+调用函数				要有缩进
+function_name(arguments)		out_line()
+
+先定义后执行
+
+eg.
+def circle_area(r):
+	area=3.14*r*r
+	return area
+
+c_area=circle_area(10)
+print(c_area)
+
+def rectangle_area(l,w):
+	'''
+	根据长方形的长度宽度计算长方形的面积
+	:param l: 长度
+	:param w: 宽度
+	:return: 长方形的面积
+	'''
+	area=l*w
+	return area
+r_area=retangle_area(20,10)
+print(r_area)
+return 无打印功能
+也可以print(rectangle_area(20,10))
+
+上面的r l,w为形式参数 只能在函数内部使用（局部变量）
+多个参数逗号分隔
+调用函数时括号内的参数为实际参数 即函数在实际调用时传入的函数
+
+如果返回值有多个 加个逗号分隔
+def circle_area_len(r):
+	return 3.14*r*r,2*3.14*r
+	#保留小数的写法 用round函数
+	return round(3.14*r*r,1),round(2*3.14.r,1)
+	保留一位小数
+area,len=circle_area_len(10)
+多个返回值会封装在元组当中
+可以解包
+a,b=circle_area_len(r)
+
+函数说明文档Docstring
+是用三引号包裹的字符串，用于解释函数的功能 参数 返回值等信息，方便调用者清除函数的具体作用及细节
+def circle_area(r):
+	'''
+	该函数用于根据圆的半径，计算圆的面积和圆的周长
+	:param r:圆的半径
+	:return: 圆的面积、周长
+	'''
+	return 3.14*r*r,2*3.14*r
+al=circle_area_len(10)
+print(al)
+
+调用help()函数
+help(rectangle_area)来查看函数的说明文档
+函数的嵌套调用
+一个函数中调用了另一个函数
+def function_a():
+	print('a ... before')
+	function_b()
+	print("a ... after")
+def function_b():
+	print("b ... before")
+	function_c()
+	print("b ... after")
+def function_c():
+	print("c ...")
+
+function_a()
+函数调用遵循栈结构，最后被调用的函数最先返回LIFO Last In First Out，后进先出
+已理解
+
+变量的作用域
+全局变量 函数之外定义的变量 在整个文件中均可使用 通常定义在文件的顶部
+局部变量 在函数内部定义的变量 只能在函数内部使用 函数执行完后会销毁
+global 明确告诉python解释器，在函数中要使用全局变量 使得在函数内部可以修改全局变量的值
+eg.
+num1=1 #全局变量
+def fun1():
+	global num1
+	num1=100 #修改全局变量num1
+	print(num1)
+fun1()  #100
+print(num1)  #100
+尽量避免在函数中使用全局变量
+考虑使用函数参数和返回值来传递数据 而不是依赖全局变量
+global主要用在程序的状态、配置和计数器中？。。
+
+eg.调试开关
+debug_mode=False
+def enable_debug_mode():
+	global debug_mode
+	debug_mode=True
+	print("debug mode is enabled")
+def disable_debug_mode():
+	global debug_mode
+	debug_mode=False
+	print("debug mode is disabled")
+
+传参方式
+调用函数时，传递实参的方式
+1.位置参数 调用函数时根据函数定义的位置来传递参数
+eg.
+def reg_stu(name,age,gender,city):
+	print(f"注册成功，姓名：{name}，年龄{age}"，性别：{gender}，城市：{city}")
+	return {"name":name,"age":age,"gender":gender,"city":city}
+stu=reg_stu("张三"，18,"男"，"北京")
+不可以直接传元组进去，但是可以解包
+stu=("张三"，18,"男","北京")
+reg_stu(*stu)
+2.关键字参数 调用函数时以函数定义时的形参名称作为关键字，以键=值的形式传递参数
+不要求顺序
+stu=reg_stu(name="张三",gender="男",city="shanghai",age="22")
+位置参数可读性较差 参数少情况下较好
+关键字参数代码繁琐 参数较多或易混淆
+半年后看，能否一眼看出每一个参数含义
+默认参数 缺省参数，用于定义函数时，为参数提供默认值，调用函数时，可以不传递有默认值的参数
+eg.
+def reg_stu(name,age,gender,city="北京")
+调用函数时
+stu=reg_stu("张三",18,"男") 使用默认值"北京"
+stu=reg_stu("赵四",22,"男","深圳")   使用指定值"深圳"
+可以设置多个默认参数 但是必须放在没有默认值的参数列表后面
+如果设置了两个默认参数，想修改后面的一个默认参数，可以直接关键字=参数
+
+不定长参数
+def cal_c(*args):
+
+data=calc_data(10,20,30,40,50,60,70,80,90,100)
+print(data)
+
+传递的所有匹配位置的参数都会被args变量收集，这些参数会合并封装为一个元组
+args是元组类型（不封装关键字参数）
+eg. 
+def calc_data(*args):
+	min_data=min(args)
+	max_data=max(args)
+	avg_data=sum(args)/len(args)
+	return min_data,max_data,round(avg_data,1)
+这里的*args是将数字打包成一个元组
+只封装位置参数
+
+关键字传递(**kwargs)
+keyword arguments
+eg.
+def calc_data(*args,**kwargs):
+	min_data=min(args)
+	max_data=max(args)
+	avg_data=sum(args)/len(args)
+	if kwargs.get("round") is not None:
+		avg_data=round(avg_data,kwargs.get('round'))
+	if kwargs.get("print"):
+#print=True or False 表示是否打印输出
+		print(f"计算出来的最小值：{min_data},最大值：{max_data},平均值：{avg_data}")
+	return min_data,max_data,avg_data
+data=calc_data(100,200,300,400,round=2,count=0)
+print(data)
+
+data=calc_data(33,11,28,91,32,75,49)
+print(data)
+参数是以键=值的形式传递的关键字参数，这些键=值参数都会被kwargs接受，合并封装为一个字典类型
+在这里round count是Key 2 0为value
+**定义时打包成字典 调用时拆开成关键字参数
+位置不定长可以放在中间 但是其后的参数必须带关键字=数据
+关键字不定长只能在最后
+前者用于处理数据 后者用于处理数量不确定的选项 函数的配置参数 用来定制函数的行为
+eg.
+点奶茶("珍珠奶茶")核心数据
+点奶茶("珍珠奶茶",甜度="少糖",冰度="去冰",大小="大杯")选项
+
+参数类型
+普通参数：数字，布尔，字符串，列表，元组，集合，字典
+特殊参数：函数
+eg.
+def add(x,y):
+	return x+y
+def subtract(x,y):
+	return x-y
+def calc(x,y,oper)
+	return oper(x,y)
+result=calc(10,20,add) 传递函数中封装的逻辑
+print(result)
+
+匿名函数 命名函数
+没有名称的函数 需要通过lambda表达式来声明函数 可以简化简单函数的编写 单行表达式
+lambda 参数列表:函数体
+lambda : print("--------------------")
+lambda x,y : x+y
+
+调用需要赋值
+out_line=lambda : print('-------------------------')
+add=lambda x,y:x+y
+
+out_line()
+print(add(100,200))
+Remark 当函数逻辑比较简单且只在一个地方使用时，可以考虑使用匿名函数，简化书写
+（通常作为高阶函数的参数使用）
+官方文档的sort()
+sort(*,key=None,reverse=False)
+可通过lambda修改key 和reverse实现按字符排序，降序等功能
+sort(key=lambda item:len(item),reverse=True)
+key=str.lower忽略大小写排序
+eg.多个数据，形成的字典，按照其中一个数据排名
+eg.
+
+students = [
+    {"name": "张三", "age": 25, "score": 90},
+    {"name": "李四", "age": 18, "score": 85},
+    {"name": "王五", "age": 22, "score": 95}
+]
+
+# students.sort()  # 这行会报错：TypeError，因为字典不能比较
+
+# 需求：按年龄（age字段）从小到大排序（年龄小的在前）
+students.sort(key=lambda x: x["age"])  
+print(students)
+# 输出顺序：李四(18岁) -> 王五(22岁) -> 张三(25岁)
+
+# 需求：按分数（score字段）从高到低排
+students.sort(key=lambda x: x["score"], reverse=True)  
+# 输出顺序：王五(95分) -> 张三(90分) -> 李四(85分)
+
+代码的可读性可维护性比简洁性重要
+
+类型注解：
+保证传参时参数类型正确
+类型注解是python的语法特性 用于明确标识变量、函数参数和返回值的数据类型 使代码更清晰更容易维护
+eg.
+a: int=695
+score: float=98.5
+hobby: str="Python"
+flag: bool=True
+pic: None=None
+
+names: list[str]=["A""C""E"]
+PHONES: set[str]={"1330000000","13333330"}
+options: dict[str,int]={"count":0,"total"：0}
+goods: tuple[str,int,int]=("手机",5999,1)
+
+若可以为两种类型
+eg.
+names2:list[str | int]
+
+在ubuntu没啥用
+
+eg.
+def add(x:int,y:int) -> str:
+'''要求输入int 返回str'''
+	return x+y
+result: list=add("Hello","World")
+print(result)
+一样不报错
+
+类型推断指的是Python解释器自动推断出变量、表达式或函数返回值的数据类型的能力，而无需开发者显式声明
+
+在对变量进行直接赋值，或者涉及到变量的运算、容器的推导等场景时，解释器会自动推导出变量的类型
+主要用于ide中 代码错误更容易在编写时被发现
+
+函数的类型的注解
+标注返回值类型
+eg.
+def cal(scores:list[int])->float:
+	return sum(scores)/len(scores)
+
+def cal_data(scores:list[int])->tuple[int,int,float]:
+	max_v=max(scores)
+	min_v=min(scores)
+	avg_v=sum(scores)/len(scores)
+	return max_v,min_v,avg_v
+
+模块
+多个python文件 便于管理
+circle_fun.py main.py ... 在main中调用circle_fun.py的函数
+Python模块 module一个.py文件就是一个模块 模块时python程序的基本组织单位。在模块中可以定义变量
+函数 类 以及可执行的代码
+内置模块
+math random os(操作系统) sys(系统参数) datetime(日期时间) time(时间访问) re(正则) csv(csv文件操>
+eg.
+#随机点名系统
+import random
+names=["ll","jj","qq","bb"]
+print(random.choice(names))
+提高代码复用性 降低开发门槛 避免命名冲突
+
+模块导入方式						eg.							way to use			eg.
+import module_name					import random,os #use comma to import many modules	module_name.function_name	random.randint(10,100)		
+import module_name as another_name			import random as rd					another_name.function_name	rd.randint(10,100)
+from module_name import function_name			from random import randint,choice			function_name			randint(10,100)
+from module_name import function_name as another_name	from random import randint as rint			another_name			rint(10,100)
+from module_name import *				from random import *					function_name			randint(10,100)
+#last one can import every function and ignore the module's name when using
+一般写在文件开头
+
+自定义模块
+当开发一些复杂项目时，为了让项目结构更清晰，更便于项目的维护管理及代码的复用，可能会把一个项目拆分为若干个模块
+Remark 每一个python 文件都可以作为一个模块，模块的名字就是文件的名字 建议使用python标识符定义 规范命名
+只有直接执行的文件需要#!/usr/bin/env python3 作为模块的话不需要
+常量的名称全部大写
+PI=3.14159265358979
+导入自定义模块
+放在同一个文件夹下直接import 文件名即可 不要加.py
+如果导入常量 则module_name.const_name 用.连接 函数也一样
+
+在模块文件中测试代码
+__name__:python内置变量，表示当前模块的名字
+直接运行当前模块，__name__的值为__main__
+ 当该模块被导入时，__name__的值就是模块名
+
+比如模块当中有一个测试代码，import进另一个模块的时候，另一个模块会执行这个
+测试代码，造成混乱
+所以可以加一个if 语句
+if __name__==__main__:
+	测试语句...
+这样子 这个测试代码只会在被import的module中运行
+
+from module_name import *
+__all__是一个模块级别的特殊变量，用于指定from模块名import *时会导入哪些功能
+(*通配了哪些功能)
+eg. 
+__all__=[常量名,函数名] 只影响*导入的功能 不影响直接导入的
+包Package
+根据功能将模块分类
+python 软件包
+包 本质是一个文件夹，该文件夹可以包含多个python模块 文件夹下还包含了一个
+__init__.py，用于描述当前包的信息
+作用:模块文件较多时，用来管理多个模块（包也是一个模块）
+包->模块->功能
+包的导入方式					eg.		调用方式						eg.
+import package_name.module_name		import utils.my_fun	package_name.module_name.function_name		utils.my_fun.log_separator1()		
+from package_name import module_name	from utils import my_fun	module_name.function_name		my_fun.log_separator1()
+form package_name import *		from utils import *	module_name.function_name
+from package_name.module_name import function_name		function_name
+from package_name.module_name import *				function_name
+
+有__init__.py才叫python软件包
+内部eg.
+__version__ - "1.0.0"
+__author__= "lmx"
+...
+
+Remark:如果要通过from utils import *导入包下所有模块，需要在__init__.py文件中添加
+__all__=[the_module_name_that_need_to_be_used]
+ 
+当包放在另一个文件夹下，可使用绝对路径import进来
+在上一级文件夹下路径 同一个project文件夹
+from chapter_two.utils.myfun import log_separator1
+
+相对路径：从当前文件所在目录开始查找
+绝对路径：从项目的根目录下开始查找
+
+面向对象基础
+面向过程编程：核心思想是把一个需求分解成一系列要执行的步骤 然后按照步骤
+依次执行这些人物（关注流程 步骤）
+适合简单 线性的任务
+面向对象编程：万物皆对象 可理解为现实中的具体的人或物在程序中的数字化身
+它把一个人或物的特征和功能打包到一起，是面向对象编程的基本单元
+对象的特征->属性  对象的功能->方法
+关注谁能帮我做这件事
+类：描述的是一组具有相同属性（特征）和方法（功能/行为）的模板
+对象：是类的实例 基于类创建出来的（实例对象）
+对象是类创造出来的，创造对象的过程，也成为对象的实例化。一个类可创建无数个对象
+
+类与对象
+类的定义
+class 类名：			class Car:
+	pass				pass
+#创建对象			
+对象名=类名()			c1=Car()
+对象名.属性名1=属性值1		c1.name="X5"
+对象名.属性名1=属性值2		c1.price=50000
+				print(c1.__dict__)
+类名的命名规范：
+大驼峰命名法：每个单词首字母都大写，单词之间没有分隔 UserInfo UserAccount
+__dict__是python 中用户自定义类实例的一个特殊属性，用于以字典形式存储对象的属性
+
+不建议动态为对象添加属性 应该是类具有一定的属性
+定义类时指定实例属性
+class 类名:
+	def __init__(self,参数列表):
+		self.属性名=参数值
+		self.属性名=参数值
+#创建对象
+对象名=类名（参数列表）
+定义在类的外面的称之为函数 定义在类中的函数称之为方法
+__init__:初始化方法，对象创建后自动调用，主要用于设置对象的初始状态
+设置对象属性
+self:方法的第一个参数，表示当前创建的实例对象
+eg.
+定义类
+class Car:
+	def __init__(self,c_color,c_brand,c_name,c_price):
+		self.color=c_color
+		self.brand=c_brand
+		self.name=c_name
+		self.price=c_price
+		print("Car类型的对象初始化完毕，对象属性已添加完毕")
+#创建对象
+c1=Car("Blue","BMW","X5",50000)
+此时调用init方法
+print(c1.__dict__)
+c2=Car("Red","Benz","78",0)
+
+实例方法
+在类中定义实例方法时，定义语法与之前学习的函数定义的方式是一致的。
+#定义类
+class 类名:
+        def __init__(self,参数列表):
+                self.属性名=参数值
+                self.属性名=参数值
+	def 方法名(self,形参列表):
+		...
+	def 方法名(self,形参列表):
+		...
+#创建对象
+对象名=类名(参数列表)
+对象名.方法名(实参)
+
+class Car:
+        def __init__(self,c_color,c_brand,c_name,c_price):
+                self.color=c_color
+                self.brand=c_brand
+                self.name=c_name
+                self.price=c_price
+	def running(self):
+		print(f"{self.brand}{self.name}正在高速行驶...")
+	def total_cost(self,discount,rate):
+		return self.price*discount+self.price*rate
+#Rate:税率
+c1=Car("BMW","X5",50000)
+total_cost=c1.total_cose(0.9,0.1)
+print(f"提车总价为：{total_cost:.0f}")
+
+c1.running()
+可以添加文档注释说明 方法
+
+魔法方法
+是指Python中提供的双下划线开头和结尾的特殊方法，用于定义类的特殊行为，比如:__init__
+魔法方法不需要手动调用 Python会在合适的时机自动调用
+
+常见的魔法方法
+__init__			初始化方法
+__str__				字符串表示的方法  在print(obj) str(obj)时触发
+__eq__				比较前后两个对象是否相等(equal)
+__lt__,__le__,__gt__,__ge__	支持比较两个对象的大小(小于less than),小于等于(less than or equal)大于(greater than)大于等于(greater than or equal)
+__len__				定义对象的长度
+__call__			让对象可以向函数一样被调用 obj()
+__getitem__			obj[key]时自动调用
+__setitem__			支持下标赋值 obj[key]=value时自动调用
+eg.
+class MyBag:
+	def __init__(self):
+		self.data={}
+	def __getitem__(self,key):
+		return self.data[key]
+	def __setitem__(self,key,value):
+		self.data[key]=value
+bag=MyBag()
+bag["name"]="小明" 触发__setitem__
+print(bag["name"]) 触发__getitem__
+c1=Car("BMW","X5","500000")
+c2=Car("BMW","X5","500000")
+print(c1)默认输出对象的十六进制内存地址
+print(c1==c2) False比较的是两个对象的内存地址 
+print(c1<c2)  会报错 默认两个对象不能大小比较
+
+要比较，可通过魔法方法
+为Car增加魔法方法
+def __str__(self):
+	return f"{sel.brand} {self.name} {self.price}"
+#此时print(c1)得到的结果为 BMW X5 500000
+def __eq__(self,other):
+	return self.price==other.price and self.brand==other.brand and self.name==other.name
+#print(c1==c2)  True
+def __lt__(self,other):
+	return self.price<other.price
+#print(c1<c2) False
+__str__是让对象在面对字符串操作时 知道如何把自己翻译成字符串
+定义__lt__,__eq__即可比较完大小
+
+实例属性
+属于每个具体对象的属性，每个对象都是独立的（每个对象特有的数据）
+通过实例对象.属性的方式操作
+类属性
+属于类本身的属性，所有实例共享的。（所有对象共享的数据或者配置）
+通过类名.属性的方式操作
+eg.
+class Car:
+	wheel=4
+	tax_rate=0.1   这两行是类属性
+	def __init__(self,c_brand,c_name,c_price):
+		self.brand=c_brand
+		...
+Remark 通过实例查找属性时，会先查找实例属性，实例属性不存在再查找类属性
+print(c1.wheel)  输出4 可以直接访问到
+如果实例属性wheel=2 会优先输出
+print(Car.wheel)也可访问到类属性
+
+异常
+Bug 程序运行过程中出现的错误 会中断程序的正常执行流程
+作用：保证数据，逻辑的正确性，避免程序执行混乱 在开发阶段 尽量发现更多的问题 尽早解决问题 保障程序正常执行
+NameError TypeError IndexError KeyError ValueError
+异常是编写健壮程序的重要工具
+
+程序运行过程中出现异常，两种解决方案：
+1.不做处理：整个程序因为一个Bug中断执行
+2.捕获处理：按照我们自己的处理方式，处理完异常，程序继续执行
+try:						try:
+	可能会出现异常的业务代码1			print("================")
+	可能会出现异常的业务代码2			print(my_name)#若未定义会报错
+	...						print("================")
+except [异常类型 as 变量名]:			except NameError as e:
+	出现异常的预案					print("程序运行报错，错误信息:",e)
+#as 变量名是可选的 用于使用变量捕获异常类型			
+[finally]:					finally:
+	不管是否出现异常都会执行的代码			print("释放资源～")
+						
+捕获所有异常
+except Exception as e:
+
+异常的传递 
+异常在函数调用中层层上报的过程，直到有人处理它或者程序崩溃
+def fun1():
+	print("fun1...running...")
+	fun2()
+def fun2():
+	print("fun2...running...")
+	fun3()
+def fun3():
+	print("fun3...running...")
+	print(my_color)
+if __name__=="__main__":
+	fun1()
+如果my_color未定义 会报错fun3()出现exception会上报给fun2()再上报给fun1()再上报给if语句最后报错
+在主程序中捕获所有异常
+改为
+if __name__=='__main__':
+	try:
+		fun1()
+	except Exception as e:
+		print("运行出错了请联系管理员")
