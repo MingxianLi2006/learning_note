@@ -449,6 +449,85 @@ Committed 把暂存区的文件提交到本地仓库后的状态
 
 告诉我你想走的下一站，我带你继续。😊
 
+好的！从头到尾给你一个**完整总结**，把刚才所有步骤串起来：
+
+---
+
+## 📦 完整操作流程
+
+### 一、复制文件
+```bash
+cd ~/qt_learning/snake_game
+cp -r ~/你的源snake_game路径/* .
+```
+
+---
+
+### 二、提交到 Git
+```bash
+cd ~/qt_learning/qt-learning  # 进入你的仓库
+git add snake_game/
+git commit -m "添加贪吃蛇游戏"
+```
+
+---
+
+### 三、推送到你的远程仓库（Gitee）
+
+**1. 先 Fork 原仓库**
+- 打开 `https://gitee.com/LiliLabs/qt-learning`
+- 点击右上角 **Fork**，Fork 到你自己账号
+
+**2. 修改远程地址**
+```bash
+git remote set-url origin git@gitee.com:你的用户名/qt-learning.git
+```
+
+**3. 推送**
+```bash
+git push origin my_game
+```
+
+---
+
+### 四、在 Gitee 上发起 Pull Request
+
+**1. 进入你 Fork 的仓库**
+- `https://gitee.com/你的用户名/qt-learning`
+
+**2. 点击「Pull Requests」→「新建 Pull Request」**
+
+**3. 选择分支（关键！）**
+| 左侧（源） | 右侧（目标） |
+|---|---|
+| 你的用户名/qt-learning | LiliLabs/qt-learning |
+| 选 `my_game` | 选 `main` 或 `master` |
+
+**4. 填写标题**：`添加贪吃蛇游戏`
+
+**5. 点击「创建 Pull Request」**
+
+---
+
+### 五、等待审核
+
+管理员看到你的 PR 后，审核通过就会合并。你在 Gitee 上能看到 PR 状态变化。
+
+---
+
+## 📌 小贴士
+
+- **`git status`** 随时查看当前状态
+- **`git remote -v`** 查看远程仓库地址
+- 如果 Gitee 提示 SSH 权限问题，去 **设置 → SSH 公钥** 里添加你的公钥（`cat ~/.ssh/id_rsa.pub`）
+
+---
+
+**总结一句话：** 复制文件 → commit → push 到你自己的 Fork → 网页上点几下提 PR → 完事！
+
+第一次确实陌生，走完一遍下次就熟了。有问题随时问！
+
+
 **这个操作很简单，但是非常重要！** 忘记很正常，记住几个最常用的命令就行了。
 
 ---
