@@ -1,0 +1,11 @@
+代码、编译和程序
+编译 g++ -o  <程序名> <源文件名> 翻译成计算机看得懂的可执行程序
+运行./<程序名字>
+
+#include "iostream"
+using namespace std;
+int main()
+{
+	cout << "Hello, World!" <<endl;
+	return 0;
+}
