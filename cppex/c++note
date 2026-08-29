@@ -1,0 +1,1451 @@
+代码、编译和程序
+编译 g++ -o  <程序名> <源文件名> 翻译成计算机看得懂的可执行程序
+运行./<程序名字>
+separate the source code into multiple files
+eg.
+同一个文件夹下
+main.cpp   mul.hpp(用于存放函数声明)  mul.cpp(用于写函数体)
+main.cpp中
+#include "mul.hpp"即可
+分开编译compile
+g++ -c main.cpp   g++ -c mul.cpp
+链接Link
+g++ main.o mul.o -o mul
+
+或者
+
+g++ main.cpp mul.cpp -o mul
+./mul
+
+Debug
+编译错误Compilation errors	eg. 漏;
+链接错误Link erros		eg. 在main文件的函数未在头文件声明
+运行错误Runtime errors		eg.0作除数
+
+预处理preprocessor和宏Macros
+eg.
+#include <iostream>
+#define PI 3.14  //PI替换为3.14
+#if defined(_OPENMP)
+#include<omp.h>
+#endif
+预处理器将#后内容预处理后送给编译器编译
+1.simple input and output
+
+c++ style output and input
+what is cout?
+std::ostream cout;
+cout is an object of data type ostream in namespace std
+cout是一个对象
+cout<<"Hello"<<endl;
+endl换行符号
+c++的输入输出采用流的概念
+
+float a;
+int b;
+cin>>a;
+cin>>b;
+
+命令行参数查看器
+argument.cpp
+#include<iostream>
+using namespace std;
+int main(int argc, char ** argv)
+{
+	for(int i=0;i<argc;i++)
+		cout<<i<<": "<<argv[i]<<endl;
+}
+
+argc		argument count参数个数
+char ** argv	argument vector参数向量 是一个指针数组
+
+ex1
+#include <iostream>
+using namespace std;
+int main(){
+        int n;
+        cin>>n;
+        for(int i=0;i<10;i++)
+                cout<<n<<" ";
+        cout<<endl;
+
+}
+
+
+2.Data Types
+
+Integer numbers
+int i;
+int j=10;
+should be initialized!
+
+int a=56789;
+int b=56789;
+int c=a*b;
+cout<<c<<endl;
+数值溢出output is negative
+unsigned int 无符号 表示正数
+signed int[-2^31,2^31-]
+unsigned int[2^32]
+还有short;long;long long
+
+sizeof()  返回占用的字节数
+
+char:type for character, 8-bit integer indeed
+signed char  unsigned char
+
+char c1='C';	//C
+char c2=80;	//P
+char c3=0x50	//P
+根据编码转换为字符
+
+表示汉字
+char16_t c=u'于';
+char32_t c=U'于';
+
+bool 1byte8bits
+true(1/非零)false(0)
+
+ex2
+//bool变量 true false 非0true 0false
+#include<iostream>
+using namespace std;
+int main(){
+        bool flag=true;
+        bool flag2=-1;
+        bool flag3=0;
+        cout<<flag<<" "<<flag2<<" "<<flag3<<endl;
+        return 0;
+
+}
+//output 1 1 0
+
+size_t:
+unsigned integer 专门用来数数的整数类型
+type of the result of sizeof operator
+表示内存大小
+int arr[100];
+size_t size=sizeof(arr);
+
+表示容器内有多少个元素
+vector<int> v={1,2,3,4,5,6};
+size_t count=v.size();
+
+作为数组容器的索引
+for(size_t i=0;i<v.size();i++)
+{	cout<<b[i];
+}
+
+floating point numbers
+十进制的小数无法被二进制准确表示 会存在精度误差
+float i=1.2f;
+float=sign+exponent+fraction 
+一般用fabs(f1-f2)<FLT_EPSILON来比较两个浮点数是否相等（差的绝对值在误差范围内）
+inf:infinity
+nan:not a number
+
+Arithmetic Operators
+95//decimal十进制		95//int
+0137//octal八进制		95u//unsigned int
+0x5F//hexadecimal十六进制	95l//long
+				95ul//unsigned long
+3.14159
+6.02e23//6.02*10^23	1.6e-19//1.6*10^-19
+6.02e23L//long double
+6.02e23f//float
+6.02e23//double
+
+const type qualifier
+const float PI = 3.1415926f;
+PI+=1;//error!
+比C的const更严格 可用来表达数组长度 不可以通过指针改变大小 必须被初始化
+ex3
+#include<iostream>
+using namespace std;
+int main(){
+	const int MAX=150;
+//相当于#define MAZ 150
+//C的const可用指针改变
+	cout<<MAX<<endl;
+	return 0;
+
+}
+
+auto 
+auto 会根据初始化定义变量的类型C++中使用必须初始化
+q:
+auto a=2;
+a=3.3;
+output a//输出为3 因为a已经被定义为了int 变量类型不改变
+
+Arithmetic operators
++ - * / ^ % 
+bitwise NOT	~a
+bitwise AND	a & b
+bitwise OR	a | b
+bitwise XOR	a ^ b
+bitwise left shift	a << b
+bitwise right shift	a >> b
+优先级
+a++ ++a */ +- <<>>
+
+implicit conversion隐式转换
+explicit conversion显式转换
+char short int long float double long double
+
+Divisions
+float f=17/5;//3
+精度低的变量和精度高的变量进行运算 结果会是精度高的那种类型
+
+
+3.控制流语句 和循环
+if statement
+if (condition)
+{
+	语句
+}
+单行语句可不加花括号
+
+if (condition1)
+{}
+else if (condition2)
+{}
+else
+{}
+
+bool isPositive=true;
+int factor=0;
+factor=isPositive?1:-1;
+或者写成factor=(isPositive)*2-1
+(条件)?(true时返回的值):(false时返回的值)
+Conditons
+the condition shuold be an expression which is convertible to bool
+relational expressions
+== != <= >= < <
+return 1 if condition is true
+return 0 if false
+
+logical expressions 连接两个布尔表达式最终输出一个布尔值
+!	not
+&&	and
+||	or
+优先级从上到下
+(-2 && true)=true
+会转换成布尔类型 -2 ->true
+数据可转换成布尔类型implicitly
+
+pointers are also frequently used as conditions
+int *p=new int[1024];
+if (!p)//if p==NULL
+	cout<<"Memory allocation failed"<<endl;
+
+while loop
+
+while(){}
+
+do
+{
+}while();
+
+break跳出循环
+continue 跳出本次循环 进入下次循环
+
+for loop
+for (init-clause;cond-expression;iteration-expression)
+{}
+
+while(num>0) ->
+for(;num>0;)
+
+for(;;)
+while(true)
+
+goto
+eg.希望算出0-1的浮点数的平方
+float mysquare(float value)
+{
+	float result=0.0f;
+	if(value>=1.0f || value<=0)
+	{
+	cerr<<"The input is out of range."<<endl;
+	goto EXIT_ERROR;
+	}
+	result=value * value;
+	return result;
+	
+	EXIT_ERROR:
+	//do sth such as closing files here
+	return 0.0f;
+}
+
+switch语句
+switch (input_char)
+{
+	case 'a':
+	case 'A':
+		cout<<"Move left"<<endl;
+		break;
+	case 'd':
+	case 'D':
+		cout<<"Move right"<<endl;
+		break;
+	default:
+		cout<<"Undefined key."<<end;;
+		break;		
+}
+DON'T forget break!
+
+4.
+Arrays数组
+int num_array1[5];
+int num_array2[5]={0,1,2,3,4}; //initialization
+int num_array[]={1,2,3,4}
+
+传入函数时数组会退化为指针,还要传入数组长度
+float array_sum(float values[],size_t length);
+float array_sum(float *values,size_t length);
+数组名字是数组的首地址
+不可array1=array2;
+
+multidimensional arrays
+int mat[2][3]={{11,12,13},{14,15,16}};
+for(int r=0;r<rows;r++)
+{	
+	for(int c=0;c<cols;c++)
+		cout<<mat[r][c]<<",";
+	cout<<endl;
+}
+
+void init_2d_array(float mat[][3],size_t rows,size_t cols)
+一定要传列数
+
+const Arrays
+const float values[4]={1.1f,2.2f,3.3f,4.4f};
+used as function arguments
+数组无法被改变 更安全
+float array_sum(const float values[],size_t length)
+{
+	float sum=0.0f;
+	for(int i=0;i<length;i++)
+	{
+		sum+=values[i];
+		//values[i]=0;
+	}
+	return sum;
+}
+调用函数
+float sum=array_sum(values,4);
+
+Strings
+Array-style strings
+char rabbit[16]={'P','e','t','e','r'};
+char bad_pig[9]={'P','e','t','e','r',' ','P','i','g'}
+会报错 需要有位置放字符串结束符\0(默认存在)
+char good_pig[10]={'P','e','t','e','r',' ','P','i','g','\0'}
+cout << good_pig; 会一直输出 直到遇到内存中的\0 \0也占一个字节
+cout<<strlen(rabbit)<<endl;
+size_t strlen(const char *str);
+
+string literals
+char name1[]="SUSTech";
+char name2[]="SUST" "ech";
+cout<<name1<<endl;//SUSTech
+cout<<name2<<endl;//SUSTech
+//不加中括号
+均合法
+字符串的操作String manipulation and examination
+copy
+strncpy(char *dest,const char *src,size_t count);
+拷贝到\0结束
+append
+strcat(char *dest,const char *src);
+compare
+strcmp(const char *lhs,const char *rhs)
+比较两个字符串是否相等 相等返回0
+按字典序排
+<返回负数
+
+
+
+string class
+using namespace std;
+string str1="Hello";
+string str2="SUSTech";
+string result=str1+","+"str2";
+cout<<"result"+result<<endl;
+cout<<"The length is "<<result.length()<<endl;
+cout<<"str1<str2 is "<<(str1<str1)<<endl;
+
+ex4
+#include <iostream>
+using namespace std;
+int main()
+{
+        string s ="hello";
+        string s2="world";
+        string s3=s+s2;
+        string s4;
+        getline(cin,s4);//获取一行
+        cout<<s3<<endl;
+        cout<<s4<<endl;
+        cout<<s.length()<<endl;
+        cout<<s4.length()<<endl;
+        string s_sub=s.substr(1,2);
+        cout << s_sub<<endl;
+        //substr(1,2)从第[1]个字符开始数 输出两个字符组成的子字符串
+        //[0]才是第一个字符
+        return 0;
+}
+
+//cin只能获取单个单词 换行回车都视为结束
+//s.length()计算长度 是字符串的方法
+//空格长度为1
+
+
+Structure Unions Enumerations
+a struct is a type consisting of a sequence of members
+
+struct Student{
+	char name[4];
+	int born;
+	bool male;
+};
+
+struct Student stu1;
+strcpy(stu1.name,"Yu");
+stu1.born=2000;
+stu.male=true
+通过  . 访问结构体成员
+也可以这样初始化
+struct Student stu{"Yu",2000,true};
+
+c++可去除struct
+c中可通过typedef来操作
+typedef
+struct _Student{
+	char name[4];
+	int born;
+	bool male;
+}Student;
+
+结构体数组
+struct Student students[100];
+sutdents[20].born=2002;
+
+
+内存
+name		born	   male	
+ 0   1   2  3  4  5  6  7  8     9  10  11  12  13
+'Y' 'U'  0  0  2  0  0  0  1 
+
+struct Student1{
+	int id;
+	bool male;
+	char label;
+	float height;
+};
+struct Student2{
+	int id;
+	bool male;
+	float height;
+	char label;
+};
+sizeof(Student1)//12
+sizeof(Student2)//16
+一个寄存器是八个字节 数据不跨寄存器存储为了传输更加高效 所以部分字节会闲置
+struct 和 class在C++中十分类似 typedef 在C++中并不常用
+
+Union联合体
+union ipv4address{
+	std::uint32_t address32;//uin32_t 4个字节
+	std::uint8_t address8[4];//uint8_t 1个字节
+};
+int main()
+{	
+	union ipv4address ip;
+	cout<<sizeof(ip)<<endl //4
+	ip.address8[3]=127;
+	ip.address8[2]=0;
+	ip.address8[1]=0;
+	ip.address8[0]=1;
+	
+	cout<<std::hex;//让cout以十六进制的格式输出整数  x=255; cout<<hex<<x<<endl;输出ff hex具有粘性 后面在cout输出的都是十六进制
+	cout<<"in hex"<<ip.address32<<endl;
+
+	return 0;
+}
+
+Enum
+enum color{WHITE,BLACK,RED,GREEN,BLUE,YELLOW,NUM_COLORS};//0123456
+enum color{WhITE=1,BLACK=2,RED,GREEN}//自动填充
+
+eg.
+enum datatype{TYPE_INT8=1,TYPE_INT16=2,TYPE_INT32=4,TYPEINT64=8};
+struct Point{//表示三维世界的一个点
+	enum datatype type;
+	union{
+		std::int8_t data7[3];
+		std::int16_t data16[3];
+		std::int32_t data32[3];
+		std::int64_t data64[3];
+	};
+};
+size_t datawidth(struct Point pt)
+{
+	return size_t(pt.type)*3;
+}
+int 64_t l1norm(struct Point pt)
+{
+	int64_t result=0;
+	switch(pt.type)
+	{
+		case(TYPE_INT8):
+			result=abs(pt.data8[0])+abs(pt.data[1])+abs(pt.data[2]);
+			...
+
+l1范数|x|+|y|+|z|
+
+typedef
+can be used to replace a possibly complex type name
+
+eg.
+typedef int myint;
+myint num=32;
+
+typedef struct _rgb_struct{
+	unsigned char r;
+	unsigned char g;
+	unsigned char b;
+}rgb_struct;
+定义结构体的同时顺便起了一个别名
+rgb_struct rgb={0,255,128};
+
+ex5
+#include<iostream>
+using namespace std;
+struct stu{
+	string name;
+	int age;
+};
+int main(){
+	stu a[10];
+//不需要加 struct stu a[10];
+//也不用typedef
+	return 0;
+}
+
+
+5.Pointers
+what stored in a pointer variable is an address
+operator & can take the address of an object or a variable of fundamental types
+operator * can take the content that the pointer points to 解引用
+int num=10;			0x03
+			num 10	0x02
+				0x01
+				0x00
+
+int *p1=&num;
+int *p2=&num;都指向0x00
+*p1=20; 直接修改了num
+
+结构体指针
+访问结构体p的成员
+p->member
+(*p).member
+两种形式等价
+
+eg.
+struct Student
+{
+	char name[4];
+	int born;
+	bool male;
+};
+Student stu={"Yu",2000,true};
+Student *pStu=&stu;指向结构体的首地址
+strncpy(pStu->name,"Li",4);
+pStu->born=2001;
+(*pStu).born=2002;
+pStu->male=false;
+cout<<"Address of stu: "<<pStu<<endl;
+cout<<"Address of member name: "<<&(pStu->name)<<endl;
+cout<<"size of (pStu) is "<<sizeof(pStu)<<endl;//x64 8
+
+Pointers of pointers
+int num=10;
+int *p=&num;
+int **pp=&p;
+*(*pp)=20;  //num=20
+指针的指针
+
+int num=1;
+int another=2;
+//You cannot change the value that p1 points to through p1
+const int *p1=&num;
+*p1=3 //error
+num=3;//okay
+
+//You cannot change value of p2(address)
+int * const p2=&num;
+*p2=3;//okay
+p2=&another;//error
+
+const int* const p3=&num;
+cannot change either of them
+
+int foo(const char *p) //防止指针被修改
+{
+//the value that p points to cannot be changed
+char *p2=p;//syntax error 类型不同const char *p2=p; 用p2只读访问数据
+return 0;
+}
+
+Pointers and arrays
+Student students[128] 结构体数组
+Student * p0=&students[0];
+Student * p1=&students[1];
+第[0],[1]个结构体的首地址
+students[1].born=2000;
+p1->born=2000;
+解引用蕴含在表达式当中
+&students 
+students 
+&students[0]
+都是数组的首地址
+
+Pointer arithmetic
+p+num  points to the num-th element of the array p
+p-num points to the -num-th element
+会根据指针的类型偏移相应的字节数
+int numbers[4]={0,1,2,3};
+int *p=numbers+1; //指向1
+p++;
+
+*p=20;				3	30
+*(p-1)=10;		   p->	2	20
+p[1]=30;  p当数组用		1	10
+				0
+
+宏
+#define PRINT_ARRAY(array,n)\ \
+for (int idx=0;idx<(n);idx++)\
+	cout<<"array["<<idx<<"]="<<(array)[idx]<<endl;
+//转义 使宏可以写成多行
+
+Array is a constant pointer
+the total size of all elements in an array can be got by sizeof
+but sizeof operator to a pointer will return the size of the address(4 or 8)
+会返回地址所占用的字节数
+Allocate memory
+栈（默认内存）通常较小
+堆（申请的内存）取决于电脑的剩余内存
+如果程序需要处理一张数据量很大的图片 一个3D模型等 
+放到栈上 可能导致栈溢出 程序崩溃
+所以要申请放到堆里
+或者
+内存需要活到函数结束之后
+栈上的变量：函数执行完后自动销毁
+堆上的变量：不delete就永远存在
+eg.在游戏里创建了一个Player 对象 玩家要活着直到被杀死或者游戏结束
+struct Player{};
+Player* createPlayer()
+{	
+	Player p;
+	return &p;
+}
+他必须跨函数存活 故必须申请放到堆里
+
+C style
+指针指向的内存是动态申请的
+程序运行时 操作系统会给程序的运行分配一段空间
+__________________
+	stack		栈 local variables, call stack		函数调用的现场
+------------------
+	  ⬇
+	  
+
+	  ^
+	  |	
+------------------	
+	heap		堆 dynamically allocated memory		new 或 malloc分配的内存
+------------------
+uninitialized data
+	bss
+__________________	未初始化的静态数据 包括变量和常量	static int x;或者int y;(全局) 
+initialized data
+	data		初始化静态变量	eg.static int x=10;
+__________________
+executable code		可运行代码	程序编译后的二进制指令，只读
+      code/text
+
+程序从堆申请地址 栈越申请越小 堆的地址越申请越大
+
+Allocate size bytes of uninitialized storage
+malloc函数原型void* malloc(size_t size) 字节数
+int * p1=(int*)malloc(4);
+强制转换为整型指针
+
+释放内存
+The dynamically allocated memory must be deallocated explicitly
+void free(void* ptr)
+p=(int*)malloc(4*sizeof(int));//内存被浪费了
+//...
+p=(int*)malloc(8*sizeof(int));
+//...
+free(p)
+
+void foo()
+{	
+	int* p=(int*)malloc(sizeof(int));
+	return;
+}//memory leak内存申请后未释放 导致内存浪费
+有申请 有释放！
+
+
+CPP style
+申请内存new new[]
+Operator new is similar with malloc() but with more features 
+int *p1=new int;//输出操作完后内存的地址
+//allocate an int, default initializer(do nothing)
+int *p2=new int();	可把括号改为花括号
+//allocate an int, initialized to 0;
+int *p3=new int(5)	可把括号改为花括号
+//allocate an int, initialize to 5;
+
+Student * ps1=new Student;			//allocate a Student object, default initializer
+Student * ps2=new Student {"Yu",2020,1};	//allocate a Student object, initialize the members
+
+int * pa1=new int[16];//allocate 16 int 未初始化
+int * pa2=new int[16];//allocate 16 int, zero initialized
+int * pa4=new int[16]{1,2,3}; //first 3 elements are initialized to 1,2,3, the rest 0
+
+Student * psa1=new Student[16];//allocate memory for 16 Student objects, default initializer
+Student * psa2=new Student[16]{{"Li",2000,1},{"Yu",2000,0}};//初始化前两个其他置0
+
+释放内存
+delete delete[]
+delete p1;
+delete ps1;//deallocate memory
+delete pa1;
+delete []pa2;//deallocate the memory of the array
+
+delete psa1;//deallocate the memory of the array, and call the destructor of the first element 释放全部内存但只调用第一个元素的析构函数 造成内存泄漏
+delete []psa2;//deallocate the memory of the array, and calll the destructors of all elements	调用每个元素的析构函数 释放整块内存 安全
+涉及到类 结构体 数组最好加[]
+
+
+6.Functions
+
+ex6
+//引用和传址
+#include<iostream>
+using namespace std;
+void c(int &a)
+{a+=1;
+}
+//定义了一个函数
+//c++的引用和c的取地址符号没有关系
+int main(){
+int a=4;
+c(a);
+cout<<a<<endl;
+return 0;
+}
+//这里&是引用会改变函数值，如果去掉则不会改变
+//stl篇stl是Standard Template Library标准模板库 是C++标准库的核心组成部分
+//本质上是一套数据结构与算法的工具箱
+//vector 动态大小 可以随意增删元素的数组替代品 向量
+//在<vector>里面 
+//vector <int> v; 空数组
+
+#include<vector>
+#include<iostream>
+using namespace std;
+int main(){
+	vector <int> v; 
+//空数组
+
+//分配数组大小v.resize(length)
+	v.resize(10);
+	cout<<v.size()<<endl;
+//显示大小
+	for(int i=0;i<10;i++){
+		v[i]=i;}
+	for(int j=0;j<10;j++){
+		cout<<v[j]<<" ";}
+//遍历赋值 输出
+
+//追加元素
+	v.push_back(11);
+	for(int k=0;k<11;k++) 
+		cout<<v[k]<<" ";
+//将11放入v并且添加空间
+	return 0;
+}
+
+#include <iostream>
+#include <vector>
+using namespace std;
+int main(){
+	vector <int> v(10,2);
+//分配了10个空间 每个空间都初始化为2
+	for(int i=0;i<10;i++)
+	cout<<v[i]<<" ";
+	cout<<endl;
+	v.resize(2);
+//resize后只有多出来的空间会变成0 如果旧大小>=新大小 则只改变空间不改变值
+	for(int k=0;k<2;k++)
+        cout<<v[k]<<" ";
+        cout<<endl;
+
+	vector <int> u(10);
+//分配了十个空间全都初始化为0
+	for(int j=0;j<10;j++)
+	cout<<u[j]<<" ";
+	cout<<endl;
+//遍历一遍 不考虑开头与结束
+	v.push_back(12);
+	for(auto p=v.begin();p!=v.end();p++)
+//v.end()指向最后一个元素后面
+	cout <<*p<<" ";
+	cout<<endl;
+}
+//set集合元素互不相同 元素会按照从小到大排序
+//插入遍历查找删除
+
+#include<iostream>
+#include<set>
+#include<vector>
+using namespace std;
+
+int main(){
+	set <int> s;
+//不可加参数 分配空间也不可行
+//	vector <int> v(10,2);
+
+//插入元素
+	s.insert(4);
+	s.insert(2);
+	s.insert(1);
+	for(auto p=s.begin();p!=s.end();p++)
+		cout<<*p<<" ";
+//读取指针指的元素
+	cout<<endl;
+//输出1 2 4
+
+//查找
+	cout<<(s.find(2)!=s.end())<<endl;
+	cout<<(s.find(5)!=s.end())<<endl;
+//分别输出1 0表示true false
+//	加了括号是布尔值
+//	s.find()的返回值是指针
+//s.find执行一次查找 找到了就返回所找元素的迭代器 没找到就返回s.end()（末尾迭代器）
+
+//删除元素
+	s.erase(1);
+	cout<<(s.find(1)!=s.end())<<endl;
+//输出0表示false
+return 0;
+}
+//map键值对 它会自动将所有键值对按照键从小到大（ASCII）排序
+//创建键值对eg. map <string,int> m;
+//添加 访问 遍历 获取长度
+
+#include<iostream>
+#include<map>
+using namespace std;
+int main(){
+	map <string,int> m;
+//添加
+	m["hello"]=2;
+	m["fuckyou"]=3;
+//访问
+	cout<<"hello: "<<m["hello"]<<endl;
+//遍历：迭代器 获取值时类似的结构性指针
+	for(auto p=m.begin();p!=m.end();p++)
+		cout<<p->first<<":"<<p->second<<endl;
+//m.begin()是结构体指针
+/*类似这种
+struct m
+{
+	string key;
+	int data;
+};
+*/
+//获取长度 m.size()  stack queue 都可以获得长度
+	cout<<"the length of map:"<<m.size()<<endl;
+//输出键的个数
+return 0;
+}
+//栈只允许在表的一段进行插入、删除操作的线性表
+//有口无肛门
+//栈stack先进后出 queue队列先进先出
+//创建栈stack <元素类型> s
+//处理 压栈 出栈 访问栈顶 获取长度
+
+#include<iostream>
+#include<stack>
+using namespace std;
+int main(){
+//创建栈
+	stack <int> s;
+//压栈
+	s.push(1);
+	s.push(2);
+	s.push(3);
+//先放1 再放2、 3
+	cout << s.top() <<endl;
+//输出栈顶3
+
+//出栈
+	s.pop();
+	cout<<s.top()<<endl;
+//输出2
+
+//获取长度
+	cout << "栈的长度为："<<s.size()<<endl;
+//遍历不可行 栈没有begin 方法 无法获取除了栈顶外的元素
+//	for(auto p=s.begin();p!=s.end();p++)
+//		cout<<*p<<endl;
+return 0;
+}
+//队列 有口有肛门 先进先出
+
+#include <queue>
+#include <iostream>
+using namespace std;
+int main(){
+	queue <int> q;
+//入队
+	for(int i=1;i<=10;i++)
+		q.push(i);
+//可获取队首队尾元素
+	cout<<"队首为："<<q.front()<<endl<<"队尾为："<<q.back()<<endl;
+
+//出队
+	q.pop();
+	cout<<"队首为："<<q.front()<<endl<<"队尾为："<<q.back()<<endl;
+
+	q.push(11);
+	cout<<"队首为："<<q.front()<<endl<<"队尾为："<<q.back()<<endl;
+
+//获取长度
+	cout<<q.size()<<endl;
+return 0;
+}
+//unordered_map unordered_set
+//无序map set 省去了排序的过程 如果刷题的时候超时了 可以使用
+//操作和有序的相同
+
+#include<iostream>
+#include<unordered_map>
+#include<unordered_set>
+using namespace std;
+int main(){
+	unordered_map <string,int> m;
+	unordered_set <int> s;
+	s.insert(1);
+	s.insert(2);
+	s.insert(3);
+
+	m["hello"]=1;
+	m["world"]=2;
+	m["fuck"]=3;
+	cout<<"集合中的元素为：";
+	for(auto p=s.begin();p!=s.end();p++)
+		cout<<*p<<" ";
+	cout<<endl;
+	for(auto p=m.begin();p!=m.end();p++){
+		cout<<"key:"<<p->first<<" value:"<<p->second<<" ";
+		cout<<endl;}
+
+return 0;
+}
+//输出顺序和哈希表有关
+//位运算 bitset
+//用于处理二进制
+//类似字符数组
+//bitset从低位到高位存储 打印和初始化的时候看到的是从高位到低位
+//bitset<8> b(0b10101010);
+//内存中的存储
+//索引:0 1 2 3 4 5 6 7
+//位： 0 1 0 1 0 1 0 1
+//  最低位         最高位
+//打印出来 cout<<b<<endl;  //10101010索引7到索引1打印
+//打印和初始化 与 存储和访问相反
+//bitset<5>b(u) u为unsigned int如果u=1,输出b的结果为00001
+//bitset<8> b(s) s为字符串 如"1101"  则输出b的结果为00001101
+
+#include<bitset>
+#include<iostream>
+using namespace std;
+int main(){
+//初始化
+	bitset <5> b(19);
+	cout<<b<<endl;//10011
+	for(int i=0;i<b.size();i++){
+	cout<<b[i]<<endl;
+	}
+	bitset <5> c("11");
+	cout<<c<<endl;//00011
+//bitset <5> b;表示5个二进制位 初始化为00000
+//(19)意为该二进制数字转换成十进制时为19 即(2)_2=(19)_19    ?=10011
+
+
+
+//处理
+//b.any()是否有1
+	cout<<"是否有1:"<<b.any()<<endl;
+//b.none()是否不存在1
+	cout<<"是否不存在1:"<<b.none()<<endl;
+//b.count "1"的个数
+	cout<<"b中1的个数:"<<b.count()<<endl;
+//b.test(i) 下标为i的元素是不是1
+	cout<<"下标为0的元素是不是1:"<<b.test(0)<<endl;
+//b.size()  b中元素的个数
+	cout<<"b中元素的个数:"<<b.size()<<endl;
+//b.flip()取反 1改0 0改1 所有位置取反
+	cout<<b.flip()<<endl;
+//b.flip(i) 第i位取反
+	cout<<b.flip(0)<<endl;
+//所有位置归0 b.reset()
+//第i位归0 b.reset(i)
+//转换为Unsigned long类型 
+//unsigned long a=b.to_ulong();
+	unsigned long a = b.to_ulong();
+	cout<<a<<endl;
+
+
+//bitset<5>b(s,pos,n)  从字符串s[pos]开始 读取n位长度进b
+	string m="0110101";
+	bitset <5> d(m,0,5);
+	cout<<d<<endl;
+//01101
+//等效于 
+//bitset <5> d("01101");
+return 0;
+}
+//sort()函数
+//主要功能是对一个数组int arr[] 或者 vector进行排序 vector是容器 需要用begin end表示头尾
+//arr[]使用 arr表示数组首地址 arr+n表示尾部
+
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+
+int main(){
+	vector <int> m(10);
+	for(int i=9;i>=0;i--)
+		m[i]=10-i;
+	for(int k=0;k<10;k++)
+		cout<<m[k]<<" ";
+	cout<<endl;
+	m.push_back(-1);
+	sort(m.begin(),m.end());
+//sort(开始排序的地方,结束排序的地方,cmp) 不一定是头尾 可以是中间部分排序
+//从小到大排序
+	for(int j=0;j<11;j++)
+		cout<<m[j]<<" ";
+	cout<<endl;
+//sort()默认从小到大排序 但是使用cmp可以自定义一些规则compare
+
+}
+//sort()默认从小到大排序 但是使用cmp可以自定义一些规则compare
+
+
+
+#include<algorithm>
+#include<iostream>
+#include<vector>
+using namespace std;
+bool cmp(int x,int y){
+	return x>y;
+}
+//bool 类型函数 如果返回true x排在y前面 如果返回false y排在x前面
+//不能有等于
+int main(){
+	vector <int> v;
+	for(int i=1;i<=10;i++)
+		v.push_back(11-i);
+	for(auto p=v.begin();p!=v.end();p++)
+		cout<<*p<<" ";
+	cout<<endl;
+//从大到小push进去
+		sort(v.begin(),v.end());
+
+		for(auto p=v.begin();p!=v.end();p++)
+			cout<<*p<<" ";
+			cout<<endl;
+//从小到大
+//使用cmp
+
+		sort(v.begin(),v.end(),cmp);
+		for(int i=0;i<10;i++)
+		cout<<v[i]<<" ";
+		cout<<endl;
+
+return 0;
+}
+//在sort内部如果cmp为真 则顺序不变 如果为假 则交换
+
+#include<iostream>
+#include<algorithm>
+#include<vector>
+using namespace std;
+struct stu
+{
+	string name;
+	int age;
+};
+bool cmp(stu a, stu b)
+{
+	if(a.age!=b.age)
+		return a.age<b.age;
+	else
+		return a.name<b.name;
+}
+//年龄不相等从小到大排序 否则按照名字的字典序
+int main(){
+	stu s[3];
+	for(int i=0;i<3;i++)
+		cin>>s[i].name>>s[i].age;
+//tom 19
+//mike 20
+//tt 12
+
+	sort(s,s+3,cmp);
+	for(int i=0;i<3;i++)
+		cout<<s[i].name<<" "<<s[i].age<<endl;
+
+	return 0;
+}
+
+#include<cctype>
+//C语言的#include<ctype.h>
+#include<iostream>
+using namespace std;
+int main(){
+	char c = 'A';
+
+cout<<"isalpha:"<<isalpha(c)<<endl;//判断是否是字母
+cout<<"islower:"<<islower(c)<<endl;//判断是否小写字母
+cout<<"isupper:"<<isupper(c)<<endl;//判断是否大写字母
+cout<<"isalnum:"<<isalnum(c)<<endl;//判断是否是字母or数字
+cout<<"isspace:"<<isspace(c)<<endl;//判断是否是空格 \t \r \n
+//布尔类型
+//其实是int类型 但是可以将非0理解为true 理解为false就行了
+char s=tolower(c);//转化成小写字母
+cout<<s<<endl;
+char s1=toupper(c);
+cout<<s1<<endl;
+return 0;
+
+}
+//c++11的解释 新增 auto to_string() stoi stof unordered_map unordered_set
+
+
+#include<iostream>
+#include<vector>
+using namespace std;
+int main(){
+//auto声明
+//auto x=19;自动识别数据类型
+//auto float y=1.8;
+//不可
+//auto a;
+//cin>>a;
+//需要直接初始化
+//不过可以cin>>n;  auto a=n;
+
+//迭代器
+vector <int> a(10,1);
+for(auto p=a.begin();p!=a.end();a++)
+	cout<<*p<<" ";
+return 0;
+}
+//数组可用迭代器
+//集合可用
+//键值对遍历可用 获取值时类似结构体指针
+//栈只可访问栈顶 队列只可访问队首队尾 不可用
+//unordered也可
+
+
+
+#include<iostream>
+#include<vector>
+using namespace std;
+//基于范围的for 循环
+//传值 for(int i:arr) cout<<i<<endl;   输出数组中的每一个元素的值 不能改变元素的值
+//传址 for(int &i:arr) i=i*2;               将数组中的每一个元素都*2 只有在引用的时候才能改变元素的值
+//推广 for(auto i:v) cout<<i<<" ";       这里的v是一个vector其实所有的容器都可以使用这种方式循环（配合auto）
+
+int main(){
+	int a[5]={1};//1 0 0 0 0
+	for(int i:a)//用i访问a
+		cout<<i<<" ";
+//输出a[i]   有点像python 的for i in a
+	cout<<endl;
+
+	for(int i:a)
+		i++;
+
+	for(int i:a)
+		cout<<i<<" ";
+//1 0 0 0 0
+//传值调用 不改变值
+	cout<<endl;
+	
+	int b[5]={1};
+	for(int &i:b)
+		i++;
+	for(int i:b)
+		cout<<i<<" ";
+
+//传址调用
+
+
+	vector <int> c(10,1);
+	for(auto i:c)//改int也可正常输出
+		cout<<i<<" "
+return 0;
+}
+
+makefile
+好的，我用**最简单的大白话**给你讲清楚 Makefile 是什么、用来干嘛的。
+
+---
+
+## 🎯 Makefile 是什么？
+
+**Makefile 就是一张"编译说明书"**，告诉电脑：
+- 先编译哪个文件
+- 后编译哪个文件
+- 最后怎么把它们拼成一个程序
+
+---
+
+## 🤔 为什么要用它？
+
+假设你有 3 个文件：`main.cpp`、`game.cpp`、`player.cpp`
+
+### 不用 Makefile（手打命令）
+```bash
+g++ -c main.cpp
+g++ -c game.cpp
+g++ -c player.cpp
+g++ -o game main.o game.o player.o
+```
+每次改完代码都要敲一遍，**文件多了能累死人**。
+
+### 用 Makefile（自动化）
+```makefile
+game: main.o game.o player.o
+	g++ -o game main.o game.o player.o
+
+main.o: main.cpp
+	g++ -c main.cpp
+
+game.o: game.cpp
+	g++ -c game.cpp
+
+player.o: player.cpp
+	g++ -c player.cpp
+```
+然后只需要敲：
+```bash
+make
+```
+它就**自动帮你编译所有改过的文件**，没改过的就不编译（省时间）。
+
+---
+
+## 📝 Makefile 的"公式"
+
+```makefile
+目标: 依赖1 依赖2
+	命令
+```
+
+- **目标**：要生成的东西（比如 `game` 或 `main.o`）
+- **依赖**：生成目标需要哪些文件
+- **命令**：怎么生成（前面必须按 **Tab 键**缩进）
+
+---
+
+## 🔍 举个生活的例子
+
+想象你要做一份**三明治**：
+
+| Makefile 写法 | 真实世界 |
+| :--- | :--- |
+| `三明治: 面包 生菜 火腿` | 三明治需要面包、生菜、火腿 |
+| `Tab + 组装三明治的命令` | 把它们叠在一起 |
+| `面包: 面粉 水 酵母` | 面包需要面粉、水、酵母 |
+| `Tab + 烤面包的命令` | 放进烤箱烤 |
+
+Makefile 就是在告诉电脑：**"想做三明治？那先检查面包、生菜、火腿有没有，没有就先做，最后组装。"**
+
+---
+
+## 🎮 你现在游戏项目的 Makefile 示例
+
+```makefile
+# 目标文件名
+TARGET = game
+
+# 所有源文件
+SRCS = main.cpp game.cpp player.cpp
+
+# 编译规则
+$(TARGET): $(SRCS)
+	g++ -std=c++17 -o $(TARGET) $(SRCS)
+
+# 清理
+clean:
+	rm -f $(TARGET)
+```
+
+保存为 `Makefile`，然后：
+```bash
+make      # 编译
+./game    # 运行
+make clean  # 删除编译出来的文件
+```
+
+---
+
+## 📊 总结
+
+| 问题 | 答案 |
+| :--- | :--- |
+| **Makefile 是什么？** | 编译说明书，告诉电脑怎么编译代码 |
+| **为什么用它？** | 自动编译、省时间、只重编译改过的文件 |
+| **核心结构？** | `目标: 依赖` + `Tab 命令` |
+| **怎么运行？** | 终端敲 `make` |
+| **和你啥关系？** | 你的游戏项目可以用 Makefile 方便编译 |
+
+---
+
+**一句话**：Makefile 就是帮你**自动编译代码**的脚本，省得你每次手动敲命令。写完 Makefile 后，以后只需要 `make` 就完事了！🎯
+cmake
+好的，**最直白的大白话**版本来了！
+
+---
+
+## 🎯 CMake 是什么？
+
+**CMake 是一个"自动生成 Makefile 的工具"**。
+
+你不是刚学了 Makefile 吗？CMake 就是帮你**自动写 Makefile** 的，不用你手写。
+
+---
+
+## 🤔 为什么要用 CMake？
+
+手写 Makefile 有两个麻烦：
+
+1. **麻烦**：几个文件还好，几十上百个文件写起来要命
+2. **不通用**：Windows、Linux、macOS 的编译方式不同，Makefile 没法直接跨平台
+
+CMake 解决了这两个问题：
+- **自动生成**：几行配置，自动生成完整的 Makefile
+- **跨平台**：在不同系统上都能生成对应的构建文件（Windows 上还能生成 Visual Studio 项目）
+
+---
+
+## 📝 怎么用？
+
+### 1. 写一个 `CMakeLists.txt`（CMake 的配置文件）
+
+```cmake
+cmake_minimum_required(VERSION 3.10)  # 指定 CMake 最低版本
+project(MyGame)                        # 项目名字
+
+set(CMAKE_CXX_STANDARD 17)             # 使用 C++17
+
+add_executable(game                     # 要生成的可执行文件名
+    main.cpp                            # 源文件1
+    game.cpp                            # 源文件2
+    player.cpp                          # 源文件3
+)
+```
+
+就这么几行，比手写 Makefile 简单多了吧？
+
+### 2. 运行 CMake（"外部构建"，推荐）
+
+```bash
+mkdir build          # 创建一个干净的构建目录
+cd build
+cmake ..             # 自动生成 Makefile（在 build/ 里）
+make                 # 用 Makefile 编译
+```
+
+**注意**：`cmake ..` 是在告诉 CMake："去上一级目录找 `CMakeLists.txt`"。
+
+---
+
+## 🔍 完整流程对比
+
+### 不用 CMake（手写 Makefile）
+```
+手写 Makefile → make → 可执行文件
+```
+
+### 用 CMake
+```
+写 CMakeLists.txt → cmake → 自动生成 Makefile → make → 可执行文件
+```
+
+多了一步 `cmake`，但省了手写 Makefile 的功夫。
+
+---
+
+## 🎮 你的游戏项目用 CMake
+
+```
+你的项目文件夹/
+├── CMakeLists.txt    ← 你写这个
+├── main.cpp
+├── game.cpp
+└── player.cpp
+```
+
+**CMakeLists.txt**：
+```cmake
+cmake_minimum_required(VERSION 3.10)
+project(Game)
+
+set(CMAKE_CXX_STANDARD 17)
+
+add_executable(game main.cpp game.cpp player.cpp)
+```
+
+然后编译：
+```bash
+mkdir build && cd build
+cmake ..
+make
+./game    # 运行
+```
+
+---
+
+## 📊 Makefile vs CMake
+
+| 对比 | Makefile | CMake |
+| :--- | :--- | :--- |
+| **角色** | 直接告诉编译器怎么做 | 生成 Makefile |
+| **谁写的** | 你手写 | CMake 自动生成 |
+| **跨平台** | ❌ 要自己适配 | ✅ 自动适配 |
+| **语法** | 复杂（Tab 缩进、规则难记） | 简单（像写配置） |
+| **大型项目** | 难维护 | 轻松管理 |
+
+---
+
+## 💡 一句话总结
+
+> **CMake = 自动生成 Makefile 的工具，让你不用手写 Makefile，还能跨平台。**
+
+写一个 `CMakeLists.txt`，然后 `cmake` + `make` 就完事了。现代 C++ 项目基本都用它，包括你听过的大项目（LLVM、OpenCV、Qt 等）。🎯

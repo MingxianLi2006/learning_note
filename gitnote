@@ -532,6 +532,93 @@ git push origin my_game
 
 ---
 
+Q:为什么修改远程地址以及Origiin的作用
+A:
+这个问题问得好！这是理解 Git 的关键，我给你讲透：
+
+---
+
+## 一、为什么要修改远程地址？
+
+**因为你有两个仓库：**
+
+| 仓库 | 谁拥有 | 你能干什么 |
+|---|---|---|
+| `LiliLabs/qt-learning` | 别人（LiliLabs） | ❌ 不能 push（没权限） |
+| `你的用户名/qt-learning` | 你自己（Fork 来的） | ✅ 可以 push 任意内容 |
+
+**所以你必须把地址改成你自己的仓库**，才能把代码推上去，不然会一直报 `Access denied`。
+
+---
+
+## 二、`origin` 是什么？
+
+**`origin` 只是一个名字（别名/代号）**，代表远程仓库的 URL。
+
+你可以把它理解成**手机里的快捷拨号**：
+
+| 快捷拨号 | 实际号码 | 意思 |
+|---|---|---|
+| `origin` | `git@gitee.com:xxx/yyy.git` | 不用每次打完整网址 |
+
+---
+
+## 三、那几个 Git 命令分别做了什么？
+
+```bash
+git remote -v
+```
+**作用**：查看当前 `origin` 指向哪个 URL（相当于查看快捷拨号存的是谁的电话）
+
+---
+
+```bash
+git remote set-url origin git@gitee.com:你的用户名/qt-learning.git
+```
+**作用**：把 `origin` 这个快捷方式，从指向 `LiliLabs` 改成指向**你自己的仓库**
+
+---
+
+```bash
+git push origin my_game
+```
+**作用**：把本地的 `my_game` 分支，推送到 `origin` 指向的那个远程仓库
+
+**翻译成人话：** “Git，把我的 `my_game` 分支推到 `origin` 这个快捷方式对应的仓库去”
+
+---
+
+## 四、整个过程就像这样
+
+**修改前：**
+```
+origin → LiliLabs/qt-learning（别人的，没权限）
+git push origin my_game → ❌ Access denied
+```
+
+**修改后：**
+```
+origin → 你的用户名/qt-learning（你自己的，有权限）
+git push origin my_game → ✅ 推送成功
+```
+
+---
+
+## 五、为什么叫 `origin`？
+
+这是 Git 的默认习惯，克隆仓库时自动把远程仓库命名为 `origin`。你也可以改成别的名字，比如：
+
+```bash
+git remote add upstream git@gitee.com:LiliLabs/qt-learning.git
+```
+这样 `upstream` 指向原仓库，`origin` 指向自己的 Fork，更清晰。但用 `origin` 也完全没问题。
+
+---
+
+**一句话总结：**
+**`origin` 只是个快捷方式，改它是因为要让 Git 知道“推到我自己的仓库，而不是别人的”。**
+
+
 ## 最常用的查看历史命令
 
 ### 1. `git log` —— 标准查看方式
@@ -728,9 +815,36 @@ git log --oneline
 **你现在是想看哪个仓库的历史？** 是你自己电脑上已有的，还是 GitHub 上别人的项目？告诉我具体情况，我教你对应的操作。😊
 
 
+撤销push
+1.找到想撤销的提交的哈希值
+git log --oneline
+会显示历次提交的哈希值
+2.执行撤销 git 会生成一个新的提交
+git revert <commit-hash>
+3.推送到github
+git push origin <分支名>
+
+撤销add or commit
+撤回所有add文件 git reset
+撤回特定的文件 git reset <文件名>
+撤销git commit
+git reset --soft HEAD~1 只撤回commit记录 保留代码修改HEAD~1表示回退到上一个提交 保留所有改动
+只修改提交信息 git commit --amend -m "msg"
+# 1. 先撤销 commit，保留修改（用 --soft）
+git reset --soft HEAD~1
+
+# 2. 此时文件还在暂存区，把特定文件从暂存区移除（但不删除本地文件）
+git reset <那个大文件>
+
+# 3. 或者直接把文件从暂存区移除并忽略后续跟踪
+git rm --cached <那个大文件>
+
+注意 文件从commit撤回后还保留在暂存区
 
 关于ssh:
 本身是远程登录协议 用于安全连接远程服务器
 具有两个核心能力：
 远程登陆shell+安全传输数据
 git使用了后者 用于验证身份和数据传输 git可视为一个专用系统账号 但是权限有限
+
+
