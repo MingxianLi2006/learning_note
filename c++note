@@ -1,68 +1,11 @@
 代码、编译和程序
 编译 g++ -o  <程序名> <源文件名> 翻译成计算机看得懂的可执行程序
 运行./<程序名字>
-separate the source code into multiple files
-eg.
-同一个文件夹下
-main.cpp   mul.hpp(用于存放函数声明)  mul.cpp(用于写函数体)
-main.cpp中
-#include "mul.hpp"即可
-分开编译compile
-g++ -c main.cpp   g++ -c mul.cpp
-链接Link
-g++ main.o mul.o -o mul
 
-或者
-
-g++ main.cpp mul.cpp -o mul
-./mul
-
-Debug
-编译错误Compilation errors	eg. 漏;
-链接错误Link erros		eg. 在main文件的函数未在头文件声明
-运行错误Runtime errors		eg.0作除数
-
-预处理preprocessor和宏Macros
-eg.
-#include <iostream>
-#define PI 3.14  //PI替换为3.14
-#if defined(_OPENMP)
-#include<omp.h>
-#endif
-预处理器将#后内容预处理后送给编译器编译
-
-simple input and output
-
-
-#include <iostream>
+#include "iostream"
 using namespace std;
 int main()
 {
 	cout << "Hello, World!" <<endl;
 	return 0;
 }
-#include <iostream>
-//input and output stream
-using namespace std;
-//使用std名称空间  封装了函数cin cout等
-int main()
-{
-	int n;
-	cin >> n;
-//cin ->scanf  scanf("%d",&n)
-	cout << "I am so handsome" << n++ << endl;
-//	cout << "Hello world" << endl;
-//endl 换行 "\n"
-
-	return 0;
-}
-/*
-如果去除了using namespace std;
-则下面要改成
-std::cin>>n
-std::cout<<I am so handsome<<n++<<std::endl;
-*/
-//cin cout运算速度不如scanf print
-//使用c中的头文件 去除.h加c
-//include <cstring>
-//include <cmath>
