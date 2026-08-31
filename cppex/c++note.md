@@ -950,6 +950,11 @@ References are much safer
 const struct Matrix & mat提供只读保护
 
 
+使用Valgrind
+Valgrind是一个内存测试、内存泄漏检测和性能分析工具
+
+
+
 ex6
 //引用和传址
 #include<iostream>
@@ -2044,15 +2049,26 @@ make clean  # 删除编译出来的文件
 cmake
 makefile依赖于平台
 cmake不依赖
+cmake的comments begins with #
 创建一个文件
 CMakeLists.txt
 写入
-cmake_minimum_required(VERSION 3.10) //版本依赖于需求
+
+cmake_minimum_required(VERSION 3.10) 
+#版本选择根据需求定
 
 project(hello)
 
 add_executable(hello main.cpp factorial.cpp printhello.cpp)
 
+
+
+#如果文件太多 可以在add_executable前添加
+aux_source_directory(<dir> <variable>)
+The command finds all the source files in the specified directory indicated by <dir> and stores the results in the specified variable indicated by <variable>
+自动查找指定目录下的所有源文件 并把文件名列表存到一个变量里
+aux_source_directory(src SOURCES)
+add_executable(hello ${SOURCES})
 终端运行
 cmake .
 

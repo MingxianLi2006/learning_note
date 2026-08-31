@@ -1,0 +1,3 @@
+/home/sleepysloth/note/learning_note/cppex/makefileex/CMakeFiles/hello.dir
+/home/sleepysloth/note/learning_note/cppex/makefileex/CMakeFiles/edit_cache.dir
+/home/sleepysloth/note/learning_note/cppex/makefileex/CMakeFiles/rebuild_cache.dir
