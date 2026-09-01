@@ -1,53 +1,71 @@
-代码、编译和程序
-编译 g++ -o  <程序名> <源文件名> 翻译成计算机看得懂的可执行程序
-运行./<程序名字>
+#1.Intro
+##代码、编译和程序
+###编译 
+```bash
+g++ -o  <程序名> <源文件名> 
+```
+翻译成计算机看得懂的可执行程序
+
+###运行
+```bash
+./<程序名字>
+```
 separate the source code into multiple files
 eg.
 同一个文件夹下
 main.cpp   mul.hpp(用于存放函数声明)  mul.cpp(用于写函数体)
-main.cpp中
-#include "mul.hpp"即可
+其中main.cpp中\#include "mul.hpp"即可
 分开编译compile
+```bash
 g++ -c main.cpp   g++ -c mul.cpp
-链接Link
+```
+###链接Link
+```bash
 g++ main.o mul.o -o mul
-
+```
 或者
-
+```bash
 g++ main.cpp mul.cpp -o mul
-./mul
+```
 
-Debug
+###Debug
 编译错误Compilation errors	eg. 漏;
 链接错误Link erros		eg. 在main文件的函数未在头文件声明
 运行错误Runtime errors		eg.0作除数
 
-预处理preprocessor和宏Macros
-eg.
+###预处理preprocessor和宏Macros
+```cpp
 #include <iostream>
 #define PI 3.14  //PI替换为3.14
 #if defined(_OPENMP)
 #include<omp.h>
 #endif
+```
 预处理器将#后内容预处理后送给编译器编译
-1.simple input and output
 
+###simple input and output
 c++ style output and input
 what is cout?
+```cpp
 std::ostream cout;
+```
 cout is an object of data type ostream in namespace std
 cout是一个对象
+```cpp
 cout<<"Hello"<<endl;
+```
 endl换行符号
 c++的输入输出采用流的概念
-
+```cpp
 float a;
 int b;
 cin>>a;
 cin>>b;
+```
+```cpp
+//命令行参数查看器
 
-命令行参数查看器
-argument.cpp
+# ===argument.cpp===
 #include<iostream>
 using namespace std;
 int main(int argc, char ** argv)
@@ -55,11 +73,11 @@ int main(int argc, char ** argv)
 	for(int i=0;i<argc;i++)
 		cout<<i<<": "<<argv[i]<<endl;
 }
-
+```
 argc		argument count参数个数
 char ** argv	argument vector参数向量 是一个指针数组
-
-ex1
+```cpp
+# ===ex1===
 #include <iostream>
 using namespace std;
 int main(){
@@ -71,41 +89,47 @@ int main(){
 
 }
 
-
-2.Data Types
+```
+#2.Data Types
 
 Integer numbers
+```cpp
 int i;
 int j=10;
+```
 should be initialized!
-
+```cpp
 int a=56789;
 int b=56789;
 int c=a*b;
 cout<<c<<endl;
+```
 数值溢出output is negative
 unsigned int 无符号 表示正数
-signed int[-2^31,2^31-]
-unsigned int[2^32]
+signed int[-2^31^,2^31^-1]
+unsigned int[2^32^]
 还有short;long;long long
 
 sizeof()  返回占用的字节数
 
 char:type for character, 8-bit integer indeed
 signed char  unsigned char
-
+```cpp
 char c1='C';	//C
 char c2=80;	//P
 char c3=0x50	//P
+```
 根据编码转换为字符
 
+
 表示汉字
+```
 char16_t c=u'于';
 char32_t c=U'于';
-
+```
 bool 1byte8bits
 true(1/非零)false(0)
-
+```cpp
 ex2
 //bool变量 true false 非0true 0false
 #include<iostream>
@@ -119,22 +143,26 @@ int main(){
 
 }
 //output 1 1 0
-
+```
 size_t:
 unsigned integer 专门用来数数的无符号整数类型
 type of the result of sizeof operator
 表示内存大小
+```cpp
 int arr[100];
 size_t size=sizeof(arr);
-
+```
 表示容器内有多少个元素
+```
 vector<int> v={1,2,3,4,5,6};
 size_t count=v.size();
-
+```
 作为数组容器的索引
+```cpp
 for(size_t i=0;i<v.size();i++)
 {	cout<<b[i];
 }
+```
 
 floating point numbers
 十进制的小数无法被二进制准确表示 会存在精度误差
@@ -159,6 +187,7 @@ const type qualifier
 const float PI = 3.1415926f;
 PI+=1;//error!
 比C的const更严格 可用来表达数组长度 不可以通过指针改变大小 必须被初始化
+```cpp
 ex3
 #include<iostream>
 using namespace std;
@@ -170,13 +199,15 @@ int main(){
 	return 0;
 
 }
+```
 
 auto 
 auto 会根据初始化定义变量的类型C++中使用必须初始化
-q:
+
+question:
 auto a=2;
 a=3.3;
-output a//输出为3 因为a已经被定义为了int 变量类型不改变
+output a?//输出为3 因为a已经被定义为了int 变量类型不改变
 
 Arithmetic operators
 + - * / ^ % 
@@ -198,21 +229,24 @@ float f=17/5;//3
 精度低的变量和精度高的变量进行运算 结果会是精度高的那种类型
 
 
-3.控制流语句 和循环
+#3.控制流语句 和 循环
+```cpp
 if statement
 if (condition)
 {
 	语句
 }
+```
 单行语句可不加花括号
 
+```cpp
 if (condition1)
 {}
 else if (condition2)
 {}
 else
 {}
-
+```
 bool isPositive=true;
 int factor=0;
 factor=isPositive?1:-1;
@@ -240,27 +274,28 @@ if (!p)//if p==NULL
 	cout<<"Memory allocation failed"<<endl;
 
 while loop
-
+```cpp
 while(){}
 
 do
 {
 }while();
-
+```
 break跳出循环
 continue 跳出本次循环 进入下次循环
-
+```cpp
 for loop
 for (init-clause;cond-expression;iteration-expression)
 {}
+```
 
-while(num>0) ->
-for(;num>0;)
+while(num>0) -> for(;num>0;)
 
-for(;;)
-while(true)
+for(;;)->while(true)
 
-goto
+goto跳转
+
+```cpp
 eg.希望算出0-1的浮点数的平方
 float mysquare(float value)
 {
@@ -277,8 +312,9 @@ float mysquare(float value)
 	//do sth such as closing files here
 	return 0.0f;
 }
-
+```
 switch语句
+```cpp
 switch (input_char)
 {
 	case 'a':
@@ -293,21 +329,24 @@ switch (input_char)
 		cout<<"Undefined key."<<end;;
 		break;		
 }
-DON'T forget break!
+	//DON'T forget break!
+```
 
-4.
-Arrays数组
+#4.
+##Arrays数组
+```cpp
 int num_array1[5];
 int num_array2[5]={0,1,2,3,4}; //initialization
 int num_array[]={1,2,3,4}
-
+```
 传入函数时数组会退化为指针,还要传入数组长度
 float array_sum(float values[],size_t length);
 float array_sum(float *values,size_t length);
 数组名字是数组的首地址
 不可array1=array2;
 
-multidimensional arrays
+###multidimensional arrays
+```cpp
 int mat[2][3]={{11,12,13},{14,15,16}};
 for(int r=0;r<rows;r++)
 {	
@@ -315,14 +354,21 @@ for(int r=0;r<rows;r++)
 		cout<<mat[r][c]<<",";
 	cout<<endl;
 }
+```
 
+```cpp
 void init_2d_array(float mat[][3],size_t rows,size_t cols)
-一定要传列数
+//一定要传列数
+```
 
-const Arrays
+###const Arrays
+```cpp
 const float values[4]={1.1f,2.2f,3.3f,4.4f};
+```
 used as function arguments
 数组无法被改变 更安全
+
+```cpp
 float array_sum(const float values[],size_t length)
 {
 	float sum=0.0f;
@@ -333,41 +379,56 @@ float array_sum(const float values[],size_t length)
 	}
 	return sum;
 }
-调用函数
+//调用函数
 float sum=array_sum(values,4);
-
-Strings
+```
+##Strings
 Array-style strings
+```cpp
 char rabbit[16]={'P','e','t','e','r'};
 char bad_pig[9]={'P','e','t','e','r',' ','P','i','g'}
-会报错 需要有位置放字符串结束符\0(默认存在)
+//会报错 需要有位置放字符串结束符\0(默认存在)
 char good_pig[10]={'P','e','t','e','r',' ','P','i','g','\0'}
-cout << good_pig; 会一直输出 直到遇到内存中的\0 \0也占一个字节
+cout << good_pig; 
+//会一直输出 直到遇到内存中的\0 \0也占一个字节
 cout<<strlen(rabbit)<<endl;
 size_t strlen(const char *str);
+```
 
 string literals
+```cpp
 char name1[]="SUSTech";
 char name2[]="SUST" "ech";
-cout<<name1<<endl;//SUSTech
-cout<<name2<<endl;//SUSTech
-//不加中括号
-均合法
+cout<<name1<<endl;
+//SUSTech
+cout<<name2<<endl;
+//SUSTech
+//不加中括号也合法
+```
+
 字符串的操作String manipulation and examination
+
 copy
+```cpp
 strncpy(char *dest,const char *src,size_t count);
-拷贝到\0结束
+//拷贝到\0结束
+```
+
 append
+```cpp
 strcat(char *dest,const char *src);
+```
 compare
+```cpp
 strcmp(const char *lhs,const char *rhs)
-比较两个字符串是否相等 相等返回0
-按字典序排
-<返回负数
+//比较两个字符串是否相等 相等返回0
+//按字典序排
+//<返回负数
+```
 
 
-
-string class
+###string class
+```
 using namespace std;
 string str1="Hello";
 string str2="SUSTech";
@@ -375,7 +436,8 @@ string result=str1+","+"str2";
 cout<<"result"+result<<endl;
 cout<<"The length is "<<result.length()<<endl;
 cout<<"str1<str2 is "<<(str1<str1)<<endl;
-
+```
+```cpp
 ex4
 #include <iostream>
 using namespace std;
@@ -400,50 +462,51 @@ int main()
 //cin只能获取单个单词 换行回车都视为结束
 //s.length()计算长度 是字符串的方法
 //空格长度为1
+```
 
-
-Structure Unions Enumerations
+##Structure Unions Enumerations
 a struct is a type consisting of a sequence of members
-
+```cpp
 struct Student{
 	char name[4];
 	int born;
 	bool male;
 };
-
 struct Student stu1;
 strcpy(stu1.name,"Yu");
 stu1.born=2000;
 stu.male=true
+```
 通过  . 访问结构体成员
 也可以这样初始化
+```cpp
 struct Student stu={"Yu",2000,true};
 Student stu={.name="Yu", .born=2000, .male=true};
-
-
-
-
+```
 
 
 c++可去除struct
 c中可通过typedef来操作
+```c
 typedef
 struct _Student{
 	char name[4];
 	int born;
 	bool male;
 }Student;
+```
 
 结构体数组
+```cpp
 struct Student students[100];
 sutdents[20].born=2002;
-
+```
 
 内存
 name		born	   male	
  0   1   2  3  4  5  6  7  8     9  10  11  12  13
 'Y' 'U'  0  0  2  0  0  0  1 
-
+```cpp
 struct Student1{
 	int id;
 	bool male;
@@ -458,10 +521,11 @@ struct Student2{
 };
 sizeof(Student1)//12
 sizeof(Student2)//16
-一个寄存器是八个字节 数据不跨寄存器存储为了传输更加高效 所以部分字节会闲置
-struct 和 class在C++中十分类似 typedef 在C++中并不常用
-
+//一个寄存器是八个字节 数据不跨寄存器存储为了传输更加高效 所以部分字节会闲置
+//struct 和 class在C++中十分类似 typedef 在C++中并不常用
+```
 Union联合体
+```cpp
 union ipv4address{
 	std::uint32_t address32;//uin32_t 4个字节
 	std::uint8_t address8[4];//uint8_t 1个字节
@@ -480,11 +544,14 @@ int main()
 
 	return 0;
 }
-
+```
 Enum
+```cpp
 enum color{WHITE,BLACK,RED,GREEN,BLUE,YELLOW,NUM_COLORS};//0123456
 enum color{WhITE=1,BLACK=2,RED,GREEN}//自动填充
+```
 
+```cpp
 eg.
 enum datatype{TYPE_INT8=1,TYPE_INT16=2,TYPE_INT32=4,TYPEINT64=8};
 struct Point{//表示三维世界的一个点
@@ -509,11 +576,11 @@ int 64_t l1norm(struct Point pt)
 			result=abs(pt.data8[0])+abs(pt.data[1])+abs(pt.data[2]);
 			...
 
-l1范数|x|+|y|+|z|
-
-typedef
+//l1范数|x|+|y|+|z|
+```
+###typedef
 can be used to replace a possibly complex type name
-
+```cpp
 eg.
 typedef int myint;
 myint num=32;
@@ -523,9 +590,11 @@ typedef struct _rgb_struct{
 	unsigned char g;
 	unsigned char b;
 }rgb_struct;
-定义结构体的同时顺便起了一个别名
+//定义结构体的同时顺便起了一个别名
 rgb_struct rgb={0,255,128};
+```
 
+```cpp
 ex5
 #include<iostream>
 using namespace std;
@@ -539,29 +608,40 @@ int main(){
 //也不用typedef
 	return 0;
 }
+```
 
-
-5.Pointers
+#5.Pointers
 what stored in a pointer variable is an address
 operator & can take the address of an object or a variable of fundamental types
 operator * can take the content that the pointer points to 解引用
-int num=10;			0x03
-			num 10	0x02
-				0x01
-				0x00
-
+#整型指针
+```cpp
+eg.
+int num=10;		
+```
+0x03
+0x02
+0x01
+0x00
+假设这四个字节存储num
+```cpp
 int *p1=&num;
 int *p2=&num;都指向0x00
 *p1=20; 直接修改了num
+```
 
+##结构体指针
+```cpp
 struct Student{};
 Student *p;
 结构体指针
 访问结构体p的成员
 p->member
 (*p).member
-两种形式等价
+//两种形式等价
+```
 
+```
 eg.
 struct Student
 {
@@ -578,26 +658,27 @@ pStu->male=false;
 cout<<"Address of stu: "<<pStu<<endl;
 cout<<"Address of member name: "<<&(pStu->name)<<endl;
 cout<<"size of (pStu) is "<<sizeof(pStu)<<endl;//x64 8
-
-Pointers of pointers
+```
+##Pointers of pointers
+```cpp
 int num=10;
 int *p=&num;
 int **pp=&p;
 *(*pp)=20;  //num=20
-指针的指针
+```
 
+```cpp
 int num=1;
 int another=2;
 //You cannot change the value that p1 points to through p1
 const int *p1=&num;
 *p1=3 //error
 num=3;//okay
-
 //You cannot change value of p2(address)
 int * const p2=&num;
 *p2=3;//okay
 p2=&another;//error
-
+```
 const int* const p3=&num;
 cannot change either of them
 
@@ -1040,8 +1121,6 @@ float max_function(float a,float b)
 		return b;
 }
 //可以用?:替换
-int main()
-{
 	int num1=20;
 	int num2=30;
 	int maxv=max_function(num1,num2);
@@ -1050,24 +1129,37 @@ int main()
 inline float max_function(float a,float b)
 {...}
 
-虚拟内存：
-+----------------------------------+
-|  栈（Stack）                     |  ← 局部变量、函数参数
-|  ⬇ 向下增长                     |
-+----------------------------------+
-|                                  |
-|  堆（Heap）                      |  ← new/malloc 分配的内存
-|  ⬆ 向上增长                     |
-+----------------------------------+
-|  数据段（Data）                  |  ← 全局变量、静态变量
-|  - 已初始化（data）              |
-|  - 未初始化（bss）               |
-+----------------------------------+
-|  代码段（Text）  ← 普通函数      |  ← 编译后的机器指令
-|  - 普通函数                      |     只读，不能修改
-|  - inline 函数（如果没展开）     |
-|  - main 函数                     |
-+----------------------------------+
+高地址
++=============================================+
+|                 内核空间                      |  ← 操作系统内核代码和数据
+|          （用户态不可访问）                   |
++---------------------------------------------+
+|                                              |
+|             栈（Stack）                       |  ← 局部变量、函数参数、返回地址
+|             ⬇ 向下增长                      |
+|                                              |
++---------------------------------------------+
+|                 空洞区域                      |  ← 栈和堆之间的未映射区域
+|                                              |
++---------------------------------------------+
+|                                              |
+|             堆（Heap）                       |  ← new / malloc 动态分配的内存
+|             ⬆ 向上增长                      |
+|                                              |
++---------------------------------------------+
+|        未初始化数据段（.bss）                |  ← 未初始化的全局变量、静态变量
+|                                              |     程序启动时由系统清零
++---------------------------------------------+
+|        已初始化数据段（.data）               |  ← 已初始化的全局变量、静态变量
+|                                              |     可读可写
++---------------------------------------------+
+|             只读数据段（.rodata）             |  ← 字符串常量、const 修饰的全局变量
+|                                              |     只读，不能修改
++---------------------------------------------+
+|             代码段（.text）                  |  ← 编译后的机器指令
+|             只读，不可修改                    |     main 函数、普通函数、未展开的 inline 函数
++---------------------------------------------+
+低地址                                        （传统情况下，代码段位于低地址）
 会和main一起进入指令流
 
 inline只是建议编译器这样操作
@@ -1314,9 +1406,694 @@ Difficult to implement and debug
 
 
 
-8.
-C/C++ with ARM
+#8.
+##C/C++ with ARM
 Intel VS ARM
+了解硬件 才能写出好的代码
+Intel占领服务器和个人电脑市场，但是功耗很大 近年来市场份额下降 
+大部分手机电视无人机使用ARM CPU 个人电脑使用ARM CPU
+ARM CPU功耗低
+
+使用ARM服务器提升代码效率
+
+Raspberry Pi 4树莓派
+相当于小型个人电脑
+上面是Linux操作系统
+
+How to develop programs with ARM
+Development boards
+Almost the same with x86 PC with Linux OS
+-g++ 
+-Makefile
+-cmake
+
+##speedup your program
+**Simple is Beautiful**
+*Short* *Simple* *Efficient*
+
+
+Some Tips On Optimization
+-Choose an appropriate algorithm 时间复杂度 空间复杂度
+-Clear and simple code for the compiler to optimize 机器可读性
+-Optimize code for memory 优化内存读写 连续读写内存
+-Do not copy large memory 避免内存拷贝
+-No printf()/cout in loops 
+-Table lookup(sin(),cos()...) 查表法（对精度要求不高）提前设置一个数组 存放三角函数值 用内存换时间
+-SIMD,OpenMP ?
+
+
+Example
+Face detection and facial landmark detection in 1600 lines of source code
+//采用卷积神经网络CNN
+https://github.com/ShiqiYu/libfacedetection
+
+###SIMD:single instruction, multiple data
+eg.
+(x,y,z,w)四维向量加法 操作方式一般是四个分量两两相加
+Scalar Operation of Vector Length 4
+SIMD可以只做一次加法 
+指令
+-Intel:MMX,SSE,SSE2,AVX,AVX2,AVX512 
+-ARM:NEON
+-RISC-V:RVV(RISC-V Vector Extension)
+可以实现
+
+SIMD in OpenCV
+"Universal intrinsics" is a types and function set intended to simplify vectorization of code on different platforms
+使用OpenCV中的universal intrinsics为算法提速
+
+SIMD只使用了一个CPU内核
+###OpenMP
+可以将任务分给各个CPU运行
+拆任务需要时间
+```cpp
+#include <omp.h>
+#pragma omp parallel for
+for(size_t i=0;i<n;i++)
+{
+	//#pragma omp parallel for
+	for(size_t j=0;j<n;j++)
+	{
+		//...
+	}
+}
+```
+循环体相互依赖无法并行运行
+
+###An example with SIMD and OpenMP
+在华为云服务器上运行函数
+ARM Cloud Server
+Huawei ARM Cloud Server
+Kunpeng 920(2 cores)
+RAM: 3GB
+openEuler Linux
+
+Functions for dot product
+```cpp
+float dotproduct(const float *p1,const float *p2,size_t n);
+float dotproduct_unloop(const float *p1,const float *p2,size_t n);	//循环展开
+float dotproduct_avx2(const float *p1,const float *p2,size_t n);	//借助SIMD和OpenMP实现
+float dotproduct_avx2_omp(const float *p1,const float *p2,size_t n);
+float dotproduct_neon(const float *p1,const float *p2,size_t n);
+float dotproduct_neon_omp(const float *p1,const float *p2,size_t n);
+```
+
+```cpp
+float dotproduct(const float *p1,const float *p2,size_t n)
+{
+	float sum=0.0f;
+	for(size_t i=0;i<n;i++)
+		sum+=(p1[i]*p2[2]);
+	return sum;
+}
+//判断i<n有代价
+```
+
+```cpp
+float dotproduct_unloop(const float *p1,const float *p2,size_t n)
+{
+	if(n%8!=0)
+	{
+		std::cerr<<"The size n must be a miltiple of 8."<<std::endl;
+		return 0.0f
+	}
+	float sum=0.0f;
+	for(size_t i=0;i<n;i+=8)
+	{
+		sum+=(p1[i]*p2[i]);
+		sum+=(p1[i+1]*p2[i+1]);
+		sum+=(p1[i+2]*p2[i+2]);
+		sum+=(p1[i+3]*p2[i+3]);
+		sum+=(p1[i+4]*p2[i+4]);
+		sum+=(p1[i+5]*p2[i+5]);
+		sum+=(p1[i+6]*p2[i+6]);
+		sum+=(p1[i+7]*p2[i+7]);
+	}
+	return sum;
+//减少循环次数
+}
+```
+
+
+```cpp
+#pragma once
+
+//确保头文件只被包含一次
+//pragma用于控制编译器的行为
+```
+
+
+###Avoid Memory Copy in OpenCV
+What's an image?
+黑白照片0-255   0为纯黑 255为纯白
+彩色图片R(0-255) G(0-255) B(0-255)
+数值代表亮度 强度
+```cpp
+cv::Mat class
+class CV_EXPORTS Mat
+{
+public:
+	//some members
+	int rows,cols;
+	//pointer to data
+	uchar* data;
+	//size_t step.p
+	MatStep step;
+};
+```
+
+可能有很多指针都指向一个Matrix的头 那么谁来释放内存？
+int* refcount引用计数 记录某块内存被多少个头指向 值变为0则可以销毁这块内存
+step表示每一行元素有多少个字节
+How many bytes for a row of Matrix 4*3
+Can be a value>=3
+Memory alignment for SIMD
+
+ROI: Region of interest
+在不复制像素数据的情况下 高效地操作图像中的一小块区域
+Mat A
+rows=100
+cols=100
+data=0xABCDEF00
+
+Mat B
+rows=100
+cols=100
+step=100
+data=0xABCDEF00
+//避免了内存的拷贝
+
+//但有时需要指向内存的中间区域
+Mat C
+rows=30
+cols=28
+step=100  //下一行的起始地址
+data=0xABCE0698
+实际上内存是线性的一维的
+
+假设Mat是一张人脸 我们只关心其中鼻子的部分 其中0xABCE0698是这个部分的起始地址 不需要把这块区域copy出来 只需要在原图上操作即可 step=100即可以一行直接到达下一行
+
+#9.类
+##classes and objects
+A struct in C is a type consisting of a sequence of data members
+Some functions/statements are needed to operate the data menbers of an object of a struct type
+操作结构体的数据危险且容易出错
+类！是更好的选择
+###Classes
+类不仅有成员数据还有成员函数（方法）
+```cpp
+class Student
+{
+	public:
+		char name[4];
+		int born;
+		bool male;
+		void setName(const char * s)
+		{
+			strncpy(name, s, sizeof(name));
+		}
+		void setBorn(int b)
+		{ 
+			born=b;
+		}
+		void setGender(bool isMale)
+		{
+			male=isMale;
+		}
+		void printInfo()
+		{
+			std::cout<<"Name: "<<name<<std::endl;
+			std::cout<<"Born in "<<born<<std::endl;
+			std::cout<<"Gender: "<<(male ? "Male":"Female")<<std::endl;
+		}
+};
+int main{
+	Student yu;
+	yu.setName("Yu");
+	yu.setBorn(2000);
+	yu.setGender(true);
+	yu.born=2001;//It can also be manipulated directly
+	yu.printInfo()
+	std::cout<<"It's name is"<<yu.name<<std::endl;
+
+	return 0;	
+}
+```
+可以直接操作是因为数据设置为了public
+//public是cpp的访问控制关键字 决定了谁能访问类中的成员（变量 函数）类外部也可以访问
+//protected 只有类内部和派生类（子类）可以访问
+//private只有类内部可以访问
+```cpp
+class Student
+{
+        private:
+		char name[4];
+		int born;
+		bool male;
+	public:
+		void setName(const char * s)
+                {
+                        strncpy(name, s, sizeof(name));
+                }
+                void setBorn(int b)
+                { ...
+//Private只能被类内部的成员函数访问
+//不写就是默认private
+```
+
+```cpp
+//在类内部成员函数可以只声明
+void setGender(bool isMale);
+void printInfo();
+//在类外部
+inline void Student::setGender(bool isMale)
+{
+	male=isMale;
+}
+void Student::printInfo
+{
+	cout<<"Name: "<<name<<endl;
+	...
+}
+//在类内部定义的成员函数 默认为inline function
+//简单的函数 放到类内部定义
+//复杂的函数 放到类外部定义
+```
+类的声明可以放到student.hpp
+类函数的定义可以放到student.cpp 要#include "student.hpp"
+
+```
+使用cmake
+
+cmake_minimum_required(VERSION3.12)
+
+project(persondemo)
+
+ADD_EXECUTABLE(persondemo main.cpp student.cpp)
+//建议进到build cmake ..
+```
+##Constructors and Destructors
+构造函数和析构函数
+##Constructor
+Different from struct in C, a constructor will be invoked when creating an object of a class
+-struct in C: allocate memory
+-class in C++:alocate memory and invoke constructor
+//The compiler will generate one with empty body
+The constructor's name is the same with the class and have no return value
+```cpp
+class Student
+{
+        private:
+		//...
+	public:
+		Student()
+		{
+			name[0]=0;
+			born=0;
+			male=false;
+		}
+		//重载
+		Student(const char* initName,int initBorn,bool isMale)
+		{
+			setName(const char * s)
+			born=initBorn;
+			male=isMale;
+		}
+};
+```
+
+
+The members can also be initialized as follows
+构造函数的另一种写法
+```cpp
+Student(const char * initName):born(0),male(true)
+{
+	setName(initName);
+}
+
+```
+
+```cpp
+public:
+	Student()
+	{
+		name[0]=0;
+		born=0;
+		male=false;
+		cout<<"Constructor:Person()"<<endl;
+	}
+	Student(const char* initName):born(0),male(true)
+	{
+		setName(initName);
+		cout<<"Constructor:Person(const char*)"<<endl;
+	}
+	Student(const char* initName,int initBorn,bool isMale)
+	{
+		setName(initName);
+		born=initBorn;
+		male=isMale;
+		cout<<"Constructor:Person(const char,int,bool)"<<endl;
+	}
+	
+
+```
+运行程序判断哪个构造函数被使用了
+Student yu;
+//输出为Constructor:Person()
+Student Li("Li");
+//输出为Constructor:Person(cosnt char*)
+Student xue=Student("XueQikun",1962,true);
+//输出为Constructor:Person(const char,int,bool)
+且打印出问题了因为strncpy只拷贝了四个字符 char name[4]
+无终止符导致乱码
+
+##Destructor
+销毁一个函数
+The destructor will be invoked when object is destryed
+Be formed from the class name preceded by a tilde ~
+Have no return value, no parameters
+
+```cpp
+class Student
+{
+	//...
+	public:
+		Student()
+		{
+			name=new char[1024]{0};
+			born=0;
+			male=false;
+			cout<<"Constructor:Person()"<<endl;
+		}
+		~Student()
+		{
+			delete [] name;
+		}
+
+};
+//申请释放对应内存
+```
+```cpp
+int main()
+{
+	{
+		Student yu;
+		yu.printInfo();
+	
+		yu.setnName("Yu");
+		yu.setBorn(2000);
+		yu.setGender(true);
+		yu.printInfo();
+	}
+	Student xue=Student("XueQikun",1962,true);
+	Student xue=Student("XueQikun",1962,true);
+	xue.printInfo();
+
+	Student * zhou=new Student("Zhou",1991,false);
+	zhou->printInfo();
+	delete zhou;
+	return 0;
+}
+//对象会在作用域结束之后会被销毁
+new出来的对象需要手动销毁
+```
+
+
+
+```cpp
+//使用new 给数组分配内存时 需要使用delete[]
+Student * class1=new Student[3]
+{
+	{"Tom",2000,true},
+	{"Bon",2001,true},
+	{"Amy",2002,false},...
+};
+class1[1].printInfo();
+//delete class1;  只调用第一个对象的析构函数
+//or
+//delete []class1;//调用每一个对象的析构函数
+//应该选择后者
+//只释放内存不调用析构函数会导致永远失去对这块内存的控制权
+//就好像住酒店 释放内存就是退房，把房卡交给酒店 告诉外界这个房间可以住人
+//但是留在酒店的行李永远无法被使用了
+//长期下去 会减少内存 减慢运行速度
+```
+
+###this pointer
+How does a member function know which name?
+```cpp
+Student yu=Student{"Yu",2000,true};
+Student amy=Student{"Amy",2000,true};
+yu.setName("yu");;
+amy.setName("Amy");
+void setName(const char* s)
+{
+	strncpy(name,s,1024);
+}
+当两个不同的对象调用同一个成员函数的时候 这个函数怎么直到该修改哪个对象的数据
+serName 如何直到这一次要修改的是yu还是amy的数据？
+编译器传了一个this 指针！
+All methods in a function have a this pointer
+It is set to the address of the object that invokes the mothod
+void setBorn(int b)
+{
+	born=b;
+}
+实际上：
+void setBorn(int b)
+{
+	this->born=b;
+}
+
+void setBorn(int born)
+{
+	this->born=born;
+}
+
+Student(const char * name,int born,bool male)
+{
+	this->name=new char[1024];
+	this->setName(name);
+	this->born=born;
+	this->male=male;
+	cout<<"Constructor: Person(const char,int,bool)"<<endl;
+
+}
+函数内部可使用当前对象的指针
+```
+
+###const and static members
+const Variables
+```cpp
+#define Value 100 (C)
+const int value=100;
+const int * p_int;
+int const * p_int;
+//指针指向的内容不能透过指针修改
+
+int * const p
+//指针自己存放的地址不能被修改
+//const 在*的哪一侧 哪一侧就无法改变
+
+void func(const int *)
+//常用于函数 保证传入变量不被修改 更安全
+
+```
+
+const Members
+-const member variables behavior similar with normal const variables
+-const member functions promise not to modify member variables 
+//函数不可修改成员变量
+```cpp
+class Student
+{
+	private:
+		const int BMI=24;
+		//...
+	public:
+		Student()
+		{
+			BMI=25;
+			//...
+		}
+		int getBorn() const
+		{
+			born++;//会报错 无法修改成员变量
+			return born;
+
+		}
+
+
+}
+```
+
+
+###static members
+static members are not bound to class instances.
+//静态成员不绑定到类的实例 变量只有一份 被所有成员共享
+```cpp
+class Student
+{
+	private:
+		static size_t student_total;//declaration only只声明
+	public:
+		Student()
+		{
+			student_total++;//每创建一个对象 总数加一
+		}
+		~Student()
+		{
+			student_total--;
+		}
+		static size_t getTotal() {return student_total;}
+		//静态函数
+
+};
+//definition it here
+size_t Student::student_total=0;
+类外定义 静态成员必须在类外单独定义 分配内存
+
+//可以在Constructor和Destructor中执行一个打印命令观察输出。
+int main()
+{	
+	cout<<"--We have "<<Student::getTotal()<<" students--"<<endl;
+}
+//静态函数不依赖任何对象 不能操作非静态变量
+```
+
+#10.运算符的重载
+##operators in opencv
+Operators for cv::Mat
+//函数有相同的函数名 但是有不同的变量 有函数重载
+```cpp
+Mat mul(Mat& A,Mat& B);
+Mat mul(Mat& A,float b);
+Mat mul(float a,Mat& B);
+```
+
+```cpp
+More convenient to code
+Mat A,B;
+float a,b;
+//...
+Mat C=A+B;
+Mat D=A*B;
+Mat E=a*A;
+//操作符重载非常方便
+```
+
+eg.
+```cpp
+#include <iostream>
+#include <opencv2/opencv.hpp>
+using namespace std;
+int main()
+{
+	float a[6]={1.0f,1.0f,1.0f,2.0f,2.0f,2.0f};
+	float b[6]={1.0f,2.0f,3.0f,4.0f,5.0f,6.0f};
+	cv::Mat A(2,3,CV_32FC1,a);//2行3列 32位浮点数 C1单通道矩阵 数据来自a
+	cv::Mat B(3,2,CV_32FC1,b);//同理
+
+	cv::Mat C=A*B;//重载
+
+	cout<<"Matrix C= "<<endl
+		<<C<<endl;//重载
+return 0;
+}
+}
+//output:Matrix C=[9,12
+		  18,24]
+```
+如何实现呢？？
+Operator overloading
+Customizes the C++ for operands of user-defined types
+Overload operators are functions with special function names:
+```cpp
+#include<string>
+
+std::string s("Hello");
+s+="C";//overloading
+s.operator+=(" and CPP!")
+//最后两行两个操作等价
+```
+##Operator overloading //Actually a function
+-Implementation of operator+() and operator+=() and operator+=()
+```cpp
+class MyTime
+{
+	int hours;
+	int minutes;
+	public:
+		MyTime():hours(0),minutes(0){} 
+		//构造函数的写法 函数名:初始化列表 函数体
+		/*等价于
+		MyTime(){
+			hours=0;
+			minuts=0;
+		}
+		*/
+		MyTime(int h,int m):hours(h),minutes(m){}
+
+		MyTime operator+(const MyTime & t) const
+		{
+			MyTime sum;
+			sum.minutes=this->minutes+t.minutes;
+			sum.hours=this->hours+t.hours;
+			sum.hours+=sum.minutes/60;
+			sum.minutes%=60;
+			return sum;
+		}//只修改了sum
+		std::string getTime() const;
+};
+//完成了operator+()的重载
+```
+
+operator+=的重载
+```cpp
+MyTime & operator+=(const MyTime & t)//引用传递
+{//引用返回
+	this->minutes+=t.minutes;
+	this->hours+=t.hours;
+
+	this->hours+=this->minutes/60;
+	this->minutes%=60;
+
+	return *this;
+	
+}//修改自身返回自身
+```
+
+
+If one operand is not MyTime, and is an int
+What about MyTime t2=t1+20; ?
+The function can be
+```cpp
+MyTime operator+(int m) const
+{
+	MyTime sum;
+	sum.minutes=this->minutes+m;
+	sun.hours=this->hours;
+	sum.hours+=sum.minutes/60;
+	sum.minutes%60;
+	return sum;
+}
+//再重载一次
+```
+
+```cpp
+MyTime operator+(const std::string str) const
+{
+	MyTime sum=*this;
+	if(str=="one hour")
+		sum.hours=this->hours+1;
+	else
+		std::cerr<<"Only\"one hour\" is supported."<<std::endl;
+}
+//实现了+"one hour"
+```
+How about the expression 20+t1; ?
+
+##Friend Function
 
 
 
@@ -1326,56 +2103,12 @@ Intel VS ARM
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```cpp
 //stl篇stl是Standard Template Library标准模板库 是C++标准库的核心组成部分
 //本质上是一套数据结构与算法的工具箱
 //vector 动态大小 可以随意增删元素的数组替代品 向量
 //在<vector>里面 
 //vector <int> v; 空数组
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 #include<vector>
 #include<iostream>
 using namespace std;
@@ -1400,7 +2133,9 @@ int main(){
 //将11放入v并且添加空间
 	return 0;
 }
+```
 
+```cpp
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -1430,9 +2165,9 @@ int main(){
 }
 //set集合元素互不相同 元素会按照从小到大排序
 //插入遍历查找删除
+```
 
-
-
+```cpp
 #include<iostream>
 #include<set>
 #include<vector>
@@ -1470,7 +2205,9 @@ return 0;
 //map键值对 它会自动将所有键值对按照键从小到大（ASCII）排序
 //创建键值对eg. map <string,int> m;
 //添加 访问 遍历 获取长度
+```
 
+```cpp
 #include<iostream>
 #include<map>
 using namespace std;
@@ -1502,7 +2239,9 @@ return 0;
 //栈stack先进后出 queue队列先进先出
 //创建栈stack <元素类型> s
 //处理 压栈 出栈 访问栈顶 获取长度
+```
 
+```cpp
 #include<iostream>
 #include<stack>
 using namespace std;
@@ -1530,7 +2269,9 @@ int main(){
 return 0;
 }
 //队列 有口有肛门 先进先出
+```
 
+```cpp
 #include <queue>
 #include <iostream>
 using namespace std;
@@ -1556,7 +2297,8 @@ return 0;
 //unordered_map unordered_set
 //无序map set 省去了排序的过程 如果刷题的时候超时了 可以使用
 //操作和有序的相同
-
+```
+```cpp
 #include<iostream>
 #include<unordered_map>
 #include<unordered_set>
@@ -1595,7 +2337,8 @@ return 0;
 //打印和初始化 与 存储和访问相反
 //bitset<5>b(u) u为unsigned int如果u=1,输出b的结果为00001
 //bitset<8> b(s) s为字符串 如"1101"  则输出b的结果为00001101
-
+```
+```cpp
 #include<bitset>
 #include<iostream>
 using namespace std;
@@ -1648,7 +2391,9 @@ return 0;
 //sort()函数
 //主要功能是对一个数组int arr[] 或者 vector进行排序 vector是容器 需要用begin end表示头尾
 //arr[]使用 arr表示数组首地址 arr+n表示尾部
+```
 
+```cpp
 #include<iostream>
 #include<algorithm>
 #include<vector>
@@ -1672,9 +2417,9 @@ int main(){
 
 }
 //sort()默认从小到大排序 但是使用cmp可以自定义一些规则compare
+```
 
-
-
+```cpp
 #include<algorithm>
 #include<iostream>
 #include<vector>
@@ -1708,7 +2453,9 @@ int main(){
 return 0;
 }
 //在sort内部如果cmp为真 则顺序不变 如果为假 则交换
+```
 
+```cpp
 #include<iostream>
 #include<algorithm>
 #include<vector>
@@ -1740,7 +2487,9 @@ int main(){
 
 	return 0;
 }
+```
 
+```cpp
 #include<cctype>
 //C语言的#include<ctype.h>
 #include<iostream>
@@ -1763,8 +2512,12 @@ return 0;
 
 }
 //c++11的解释 新增 auto to_string() stoi stof unordered_map unordered_set
+```
 
 
+
+
+```cpp
 #include<iostream>
 #include<vector>
 using namespace std;
@@ -1789,9 +2542,11 @@ return 0;
 //键值对遍历可用 获取值时类似结构体指针
 //栈只可访问栈顶 队列只可访问队首队尾 不可用
 //unordered也可
+```
 
 
 
+```cpp
 #include<iostream>
 #include<vector>
 using namespace std;
@@ -1830,7 +2585,7 @@ int main(){
 		cout<<i<<" "
 return 0;
 }
-
+```
 
 
 
