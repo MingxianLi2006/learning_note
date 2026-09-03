@@ -107,8 +107,8 @@ cout<<c<<endl;
 ```
 数值溢出output is negative  
 unsigned int 无符号 表示正数  
-signed int[-2^31^,2^31^-1]  
-unsigned int[2^32^]  
+signed int[-2<suo>31<sup>,2<sup>31<sup>-1]  
+unsigned int[2<sup>32<sup>]  
 还有short;long;long long  
 
 sizeof()  返回占用的字节数  
@@ -762,25 +762,25 @@ Player* createPlayer()
 C style
 指针指向的内存是动态申请的
 程序运行时 操作系统会给程序的运行分配一段空间
-__________________  
-	stack		栈 local variables, call stack		函数调用的现场
-------------------  
-	  ⬇    
+```text
+__________________________
+          stack            ← 栈：局部变量、函数调用现场
+          ⬇
 
-	  ^
-	  |	
-------------------	
-	heap		堆 dynamically allocated memory		new 或 malloc分配的内存
-------------------
-uninitialized data
-	bss
-__________________	未初始化的静态数据 包括变量和常量	static int x;或者int y;(全局) 
-initialized data
-	data		初始化静态变量	eg.static int x=10;
-__________________
-executable code		可运行代码	程序编译后的二进制指令，只读
-      code/text
-
+          ⬆
+__________________________
+          heap             ← 堆：动态分配内存 (new/malloc)
+__________________________
+    uninitialized data
+          bss             ← 未初始化静态数据：static int x; 或全局 int y;
+__________________________
+  initialized data
+         data             ← 已初始化静态变量：static int x = 10;
+__________________________
+   executable code
+       code/text          ← 可执行代码：编译后的二进制指令（只读）
+__________________________
+```
 程序从堆申请地址 栈越申请越小 堆的地址越申请越大  
 
 Allocate size bytes of uninitialized storage  
@@ -805,22 +805,31 @@ void foo()
 //有申请 有释放！
 ```
 
-CPP style
-申请内存new new[]
-Operator new is similar with malloc() but with more features 
-int *p1=new int;//输出操作完后内存的地址
-//allocate an int, default initializer(do nothing)
-int *p2=new int();	可把括号改为花括号
-//allocate an int, initialized to 0;
-int *p3=new int(5)	可把括号改为花括号
+## CPP style  
+### 申请内存`new new[]`  
+Operator new is similar with malloc() but with more features   
+```cpp
+int *p1=new int;
+//输出操作完后内存的地址  
+//allocate an int, default initializer(do nothing)  
+int *p2=new int();	
+//可把括号改为花括号  
+//allocate an int, initialized to 0;  
+int *p3=new int(5)	
+//可把括号改为花括号  
 //allocate an int, initialize to 5;
 
-Student * ps1=new Student;			//allocate a Student object, default initializer
-Student * ps2=new Student {"Yu",2020,1};	//allocate a Student object, initialize the members
+Student * ps1=new Student;			
+//allocate a Student object, default initializer
+Student * ps2=new Student {"Yu",2020,1};	
+//allocate a Student object, initialize the members
 
-int * pa1=new int[16];//allocate 16 int 未初始化
-int * pa2=new int[16];//allocate 16 int, zero initialized
-int * pa4=new int[16]{1,2,3}; //first 3 elements are initialized to 1,2,3, the rest 0
+int * pa1=new int[16];
+//allocate 16 int 未初始化
+int * pa2=new int[16];
+//allocate 16 int, zero initialized
+int * pa4=new int[16]{1,2,3}; 
+//first 3 elements are initialized to 1,2,3, the rest 0
 
 Student * psa1=new Student[16];//allocate memory for 16 Student objects, default initializer
 Student * psa2=new Student[16]{{"Li",2000,1},{"Yu",2000,0}};//初始化前两个其他置0
@@ -832,22 +841,26 @@ int* arr=new int[10];
 int* arr=new int[5]{1,2,3,4,5};
 //分配五个int并且初始化
 {}  ()表示初始化为0 初始化数字不足的补0
+```
 
 
-
-释放内存
+### 释放内存
+```cpp
 delete delete[]
 delete p1;
 delete ps1;//deallocate memory
 delete pa1;
 delete []pa2;//deallocate the memory of the array
 
-delete psa1;//deallocate the memory of the array, and call the destructor of the first element 释放全部内存但只调用第一个元素的析构函数 造成内存泄漏
-delete []psa2;//deallocate the memory of the array, and calll the destructors of all elements	调用每个元素的析构函数 释放整块内存 安全
-涉及到类 结构体 数组最好加[]
+delete psa1;//deallocate the memory of the array, and call the destructor of the first element 
+//释放全部内存但只调用第一个元素的析构函数 造成内存泄漏
+delete []psa2;//deallocate the memory of the array, and calll the destructors of all elements	
+//调用每个元素的析构函数 释放整块内存 安全
+//涉及到类 结构体 数组最好加[]
+```
 
-
-6.Functions
+# 6.Functions
+```cpp
 #include <iostream>
 #include <cfloat>
 using namespace std;
@@ -896,7 +909,9 @@ int main() {
 还可以这样初始化
 Matrix matA={3,4};//三行四列
 matA.pData=new float[matA.rows*matA.cols]{1.f,2.f,3.f};//其他元素自动赋0
+```
 
+```cpp
 eg.
 #include<cfloat>
 #include<iostream>
@@ -935,9 +950,10 @@ int main()
 	delete[] mata.pData;
 	return 0;
 }
+```
 
-
-
+```cpp
+//指针版本
 #include <cfloat>
 #include <iostream>
 using namespace std;
@@ -977,15 +993,15 @@ int main() {
     delete[] mata.pData;
     return 0;
 }
-指针版本
-
-也可以直接传结构体
-保证函数的健壮性 检查输入 如果pData是NULL 则会报错
 
 
-函数声明
+//也可以直接传结构体
+//保证函数的健壮性 检查输入 如果pData是NULL 则会报错
+```
+
+## 函数声明
 返回类型 函数名 (参数类型 参数列表);
-
+```cpp
 draw.h
 //用于写函数原型
 #ifndef __DRAW_H__
@@ -995,27 +1011,32 @@ draw.h
 bool drawLine(int x1,int y1,int x2,int y2);
 bool drawRectangle(int x1,int y1,int x2,int y2);
 #endif
+```
 
+```cpp
 draw.cpp
 //用于写函数体
+```
 
+```cpp
 main.cpp
-
+```
 
 How are functions called?
-二进制指令一条条往里面搬运
-函数调用会导致跳转
-当前状态会被保存（压栈）
-function执行完后
-状态从栈中取出
-The cost to call a function!
+二进制指令一条条往里面搬运  
+函数调用会导致跳转  
+当前状态会被保存（压栈）  
+function执行完后  
+状态从栈中取出  
+The cost to call a function!  
 
-function parameters
-1.pass by value		传值调用
-2.pass by reference	
+### function parameters  
+1.pass by value		传值调用  
+2.pass by reference	引用调用  
 
-pass by value
-将数据复制后传入函数 但函数调用不改变原数据
+#### pass by value  
+将数据复制后传入函数 但函数调用不改变原数据  
+```cpp
 int foo(int *p)
 {
 	(*p)+=10;
@@ -1025,31 +1046,32 @@ int foo(int *p)
 int num1=20;
 int *p=&num1;
 num2=foo(p);
-传进去的是p地址的复制值
-会改变num1的值 但是不改变p的值 依然是传值的逻辑
+//传进去的是p地址的复制值
+//会改变num1的值 但是不改变p的值 依然是传值的逻辑
+```
+If the structure is a huge one, such as 1K bytes  
+A copy will cost 1kb memory and time consuming to copy it.  
+So we can pass the pointer that stores the address of the structure or use reference  
 
-If the structure is a huge one, such as 1K bytes
-A copy will cost 1kb memory and time consuming to copy it.
-So we can pass the pointer that stores the address of the structure or use reference
-
-pass by reference 引用(C++)
-a reference is an alias to an already-existing variable/object
-别名
+#### pass by reference 引用(C++)
+a reference is an alias to an already-existing variable/object(别名)  
+```cpp
 int num=0;
 int & num_ref=num;给num起了一个别名
 //&写在类型后面是引用 写在变量前面是取地址
 num_ref=10
 //num=10也会发生变化
 //引用必须初始化
-References are much safer
-const struct Matrix & mat提供只读保护
+```
+
+References are much safer  
+const struct Matrix & mat提供只读保护  
 
 
-使用Valgrind
-Valgrind是一个内存测试、内存泄漏检测和性能分析工具
+使用Valgrind  
+Valgrind是一个内存测试、内存泄漏检测和性能分析工具  
 
-
-
+```cpp
 ex6
 //引用和传址
 #include<iostream>
@@ -1066,14 +1088,15 @@ cout<<a<<endl;
 return 0;
 }
 //这里&是引用会改变函数值，如果去掉则不会改变
+```
 
 
+### Return statement
+`return;`只适用于void类型函数  
+return 语句会把其后的值自动转换成函数返回类型再返回 隐式类型转换  
 
-Return statement
-return;只适用于void类型函数
-return 语句会把其后的值自动转换成函数返回类型再返回 隐式类型转换
-
-指针函数返回指针
+指针函数返回指针  
+```cpp
 Matrix* create_matrix(int rows,int cols)
 {
 //检查输入是否合法
@@ -1083,10 +1106,10 @@ Matrix* create_matrix(int rows,int cols)
 	//don't forget to release the memory
 	return p;
 }
-
+```
 
 结构体函数返回的是整个结构体
-eg.
+```cpp
 Matrix createMatrix(int rows,int cols)
 {
 	Matrix mat;
@@ -1102,16 +1125,16 @@ int main()
 	return 0;
 	delete[] m.pData
 }
+```
+函数调用暗含赋值操作 引用的等号更像是绑定 比普通的赋值更紧密  
 
-函数调用暗含赋值操作 引用的等号更像是绑定 比普通的赋值更紧密
-
-If we have a lot to return
-such as a matrix addition function(A+B->C)
-Suggested
-use reference to avoid data copying
-use const parameters to avoid the input data is modified
-use non-const reference parameters to receive the output
-
+If we have a lot to return  
+such as a matrix addition function(A+B->C)  
+Suggested  
+use reference to avoid data copying  
+use const parameters to avoid the input data is modified  
+use non-const reference parameters to receive the output  
+```cpp
 bool matrix_add(const Matrix & matA,const Matrix & matB,Matrix &matC)
 {
 	//check the dimensions of the three matrices
@@ -1120,13 +1143,13 @@ bool matrix_add(const Matrix & matA,const Matrix & matB,Matrix &matC)
 	//return true if everying is right
 }
 
+```
 
-
-Inline function
-Stack operations and jumps are needed for a function call
-It is a heavy cost for some frequently called tiny functions
+# Inline function
+Stack operations and jumps are needed for a function call  
+It is a heavy cost for some frequently called tiny functions  
+```cpp
 //为避免频繁的压栈 出栈 针对频繁调用的小函数可以将其写成inline function
-eg.
 float max_function(float a,float b)
 {
 	if (a>b)
@@ -1142,7 +1165,8 @@ float max_function(float a,float b)
 
 inline float max_function(float a,float b)
 {...}
-
+```
+```text
 高地址  
 +=============================================+  
 |                 内核空间                      |  ← 操作系统内核代码和数据  
@@ -1175,7 +1199,7 @@ inline float max_function(float a,float b)
 +---------------------------------------------+  
 低地址                                        （传统情况下，代码段位于低地址）  
 会和main一起进入指令流  
-
+```
 inline只是建议编译器这样操作  
 
 why not use a macros?  
@@ -1254,20 +1278,21 @@ float sum(float x,float y)
 }
 ```
 `double sum(double x,double y);`
-不能重定义 需要参数类型不同 参数名相同
-仅返回值不同 不可重载
+不能重定义 需要参数类型不同 参数名相同  
+仅返回值不同 不可重载  
 
-Function templates
-函数模板
-函数重载下 函数的修改变得比较机械重复
-有没有什么东西可以生成多个相似的函数呢？？
+### Function templates  
+函数模板  
+函数重载下 函数的修改变得比较机械重复  
+有没有什么东西可以生成多个相似的函数呢？？  
 
-Explicit Instantiation
-显式实例化
-A function template is not a type, or a function, or any other entity
-No code is generated from a source file that contains only template definitions
-The template arguments must be determined, then the compiler can generate an actual function
-只有确定了模板参数（T的具体类型）后 编译器才能生成一个真正的参数
+Explicit Instantiation  
+#### 显式实例化  
+A function template is not a type, or a function, or any other entity  
+No code is generated from a source file that contains only template definitions  
+The template arguments must be determined, then the compiler can generate an actual function  
+只有确定了模板参数（T的具体类型）后 编译器才能生成一个真正的参数  
+
 `sum<int> or sum<double>`
 
 ```cpp
@@ -1287,7 +1312,7 @@ template int sum(int,int);
 ```
 只是提前生成一个版本 不会影响别的版本的生成
 
-隐式实例化
+#### 隐式实例化
 ```cpp
 cout<<"sum= "<<sum<float>(2.2f,3.0f)<<endl;
 //<float>也可省去
@@ -1315,6 +1340,7 @@ Point sum<Point>(Point pt1,Point pt2)
 	return pt;
 }
 ```
+
 ```cpp
 eg.
 #include<iostream>
@@ -1352,8 +1378,7 @@ int main()
 //特例化结构必须一致
 ```
 
-## Function pointers
-函数指针
+## Function pointers函数指针
 ```cpp
 eg.
 float norm_l1(float x,float y);
@@ -1369,8 +1394,8 @@ float len2=(*norm_ptr)(-3.0f,4.0f);
 两种调用方式
 ```
 
-A function pointer can be an argument and pass to a function
-用于灵活调用函数
+A function pointer can be an argument and pass to a function  
+用于灵活调用函数  
 ```cpp
 <stdlib.h>
 void qsort(void *ptr,size_t count,size_t size, int(*comp)(const void *,const void *));
@@ -1380,11 +1405,12 @@ struct Persion
 *comp就是比较的依据 使用指针调用函数作为排序的依据
 ```
 
-Function references
-函数引用
+## Function references函数引用
+```cpp
 float norm_l1(float x,float y);
 float norm_l2(float x,float y);
 float (&norm_ref)(float x,float y)=norm_l1;
+```
 函数别名
 
 函数名其实也是一个指针
@@ -1393,8 +1419,8 @@ float (&norm_ref)(float x,float y)=norm_l1;
 
 
 
-Recursive Function
-递归函数
+## Recursive Function递归函数
+```cpp
 void div2(double val)
 {
 	cout<<"Entering val= "<<val<<endl;
@@ -1404,41 +1430,42 @@ void div2(double val)
 		cout<<"-----------------"<<endl;
 	cout<<"Leaving val="<<val<<endl;
 }
-如果条件改为val>-1.0 回报错
+如果条件改为val>-1.0 会报错
+```
 Pros:
-Good at tree traversal
-Less lines of source code
+Good at tree traversal  
+Less lines of source code  
 
-Cons:
-Consume more stack memory
-Maybe slow
-Difficult to implement and debug
+Cons:  
+Consume more stack memory  
+Maybe slow  
+Difficult to implement and debug  
 
-函数递归是一个栈结构 先进后出
+函数递归是一个栈结构 先进后出  
 
 
 
 
 # 8.
-##C/C++ with ARM
-Intel VS ARM
-了解硬件 才能写出好的代码
-Intel占领服务器和个人电脑市场，但是功耗很大 近年来市场份额下降 
-大部分手机电视无人机使用ARM CPU 个人电脑使用ARM CPU
-ARM CPU功耗低
+## C/C++ with ARM
+Intel VS ARM  
+了解硬件 才能写出好的代码  
+Intel占领服务器和个人电脑市场，但是功耗很大 近年来市场份额下降   
+大部分手机电视无人机使用ARM CPU 个人电脑使用ARM CPU  
+ARM CPU功耗低  
 
-使用ARM服务器提升代码效率
+使用ARM服务器提升代码效率  
 
-Raspberry Pi 4树莓派
-相当于小型个人电脑
-上面是Linux操作系统
+Raspberry Pi 4树莓派  
+相当于小型个人电脑  
+上面是Linux操作系统  
 
-How to develop programs with ARM
-Development boards
-Almost the same with x86 PC with Linux OS
--g++ 
--Makefile
--cmake
+How to develop programs with ARM  
+Development boards  
+Almost the same with x86 PC with Linux OS  
+- g++   
+- Makefile
+- cmake
 
 ## speedup your program
 ```cpp
@@ -1446,40 +1473,40 @@ Almost the same with x86 PC with Linux OS
 *Short* *Simple* *Efficient*
 ```
 
-Some Tips On Optimization
--Choose an appropriate algorithm 时间复杂度 空间复杂度
--Clear and simple code for the compiler to optimize 机器可读性
--Optimize code for memory 优化内存读写 连续读写内存
--Do not copy large memory 避免内存拷贝
--No printf()/cout in loops 
--Table lookup(sin(),cos()...) 查表法（对精度要求不高）提前设置一个数组 存放三角函数值 用内存换时间
--SIMD,OpenMP ?
+#### Some Tips On Optimization
+- Choose an appropriate algorithm 时间复杂度 空间复杂度
+- Clear and simple code for the compiler to optimize 机器可读性
+- Optimize code for memory 优化内存读写 连续读写内存
+- Do not copy large memory 避免内存拷贝
+- No printf()/cout in loops 
+- Table lookup(sin(),cos()...) 查表法（对精度要求不高）提前设置一个数组 存放三角函数值 用内存换时间
+- SIMD,OpenMP ?
 
 
-Example
-Face detection and facial landmark detection in 1600 lines of source code
-//采用卷积神经网络CNN
-https://github.com/ShiqiYu/libfacedetection
+Example  
+Face detection and facial landmark detection in 1600 lines of source code  
+//采用卷积神经网络CNN  
+<https://github.com/ShiqiYu/libfacedetection>
 
 ### SIMD:single instruction, multiple data
-eg.
-(x,y,z,w)四维向量加法 操作方式一般是四个分量两两相加
-Scalar Operation of Vector Length 4
-SIMD可以只做一次加法 
-指令
--Intel:MMX,SSE,SSE2,AVX,AVX2,AVX512 
--ARM:NEON
--RISC-V:RVV(RISC-V Vector Extension)
+eg.  
+(x,y,z,w)四维向量加法 操作方式一般是四个分量两两相加  
+Scalar Operation of Vector Length 4  
+SIMD可以只做一次加法   
+指令  
+- Intel:MMX,SSE,SSE2,AVX,AVX2,AVX512 
+- ARM:NEON
+- RISC-V:RVV(RISC-V Vector Extension)
 可以实现
 
-SIMD in OpenCV
-"Universal intrinsics" is a types and function set intended to simplify vectorization of code on different platforms
-使用OpenCV中的universal intrinsics为算法提速
+### SIMD in OpenCV
+"Universal intrinsics" is a types and function set intended to simplify vectorization of code on different platforms  
+使用OpenCV中的universal intrinsics为算法提速  
 
-SIMD只使用了一个CPU内核
-###OpenMP
-可以将任务分给各个CPU运行
-拆任务需要时间
+SIMD只使用了一个CPU内核  
+### OpenMP
+可以将任务分给各个CPU运行  
+拆任务需要时间  
 ```cpp
 #include <omp.h>
 #pragma omp parallel for
@@ -1492,18 +1519,17 @@ for(size_t i=0;i<n;i++)
 	}
 }
 ```
-循环体相互依赖无法并行运行
+循环体相互依赖无法并行运行  
 
 ### An example with SIMD and OpenMP
-在华为云服务器上运行函数
-ARM Cloud Server
-Huawei ARM Cloud Server
-Kunpeng 920(2 cores)
-RAM: 3GB
+在华为云服务器上运行函数  
+ARM Cloud Server  
+Huawei ARM Cloud Server  
+Kunpeng 920(2 cores)  
+RAM: 3GB  
 openEuler Linux
-
-Functions for dot product
 ```cpp
+//Functions for dot product
 float dotproduct(const float *p1,const float *p2,size_t n);
 float dotproduct_unloop(const float *p1,const float *p2,size_t n);	//循环展开
 float dotproduct_avx2(const float *p1,const float *p2,size_t n);	//借助SIMD和OpenMP实现
@@ -1576,44 +1602,44 @@ public:
 };
 ```
 
-可能有很多指针都指向一个Matrix的头 那么谁来释放内存？
-int* refcount引用计数 记录某块内存被多少个头指向 值变为0则可以销毁这块内存
-step表示每一行元素有多少个字节
-How many bytes for a row of Matrix 4*3
-Can be a value>=3
-Memory alignment for SIMD
+可能有很多指针都指向一个Matrix的头 那么谁来释放内存？  
+int* refcount引用计数 记录某块内存被多少个头指向 值变为0则可以销毁这块内存  
+step表示每一行元素有多少个字节  
+How many bytes for a row of Matrix 4*3  
+Can be a value>=3  
+Memory alignment for SIMD  
 
-ROI: Region of interest
-在不复制像素数据的情况下 高效地操作图像中的一小块区域
-Mat A
-rows=100
-cols=100
-data=0xABCDEF00
+ROI: Region of interest  
+在不复制像素数据的情况下 高效地操作图像中的一小块区域  
+Mat A  
+rows=100  
+cols=100  
+data=0xABCDEF00  
 
-Mat B
-rows=100
-cols=100
-step=100
-data=0xABCDEF00
-//避免了内存的拷贝
+Mat B  
+rows=100  
+cols=100  
+step=100  
+data=0xABCDEF00  
+//避免了内存的拷贝  
 
-//但有时需要指向内存的中间区域
-Mat C
-rows=30
-cols=28
-step=100  //下一行的起始地址
-data=0xABCE0698
-实际上内存是线性的一维的
+//但有时需要指向内存的中间区域  
+Mat C  
+rows=30  
+cols=28  
+step=100  //下一行的起始地址  
+data=0xABCE0698  
+实际上内存是线性的一维的  
 
 假设Mat是一张人脸 我们只关心其中鼻子的部分 其中0xABCE0698是这个部分的起始地址 不需要把这块区域copy出来 只需要在原图上操作即可 step=100即可以一行直接到达下一行
 
 # 9.类
 ## classes and objects
-A struct in C is a type consisting of a sequence of data members
-Some functions/statements are needed to operate the data menbers of an object of a struct type
-操作结构体的数据危险且容易出错
-类！是更好的选择
-###Classes
+A struct in C is a type consisting of a sequence of data members  
+Some functions/statements are needed to operate the data menbers of an object of a struct type  
+操作结构体的数据危险且容易出错  
+类！是更好的选择  
+### Classes
 类不仅有成员数据还有成员函数（方法）
 ```cpp
 class Student
@@ -1653,10 +1679,12 @@ int main{
 	return 0;	
 }
 ```
-可以直接操作是因为数据设置为了public
-//public是cpp的访问控制关键字 决定了谁能访问类中的成员（变量 函数）类外部也可以访问
-//protected 只有类内部和派生类（子类）可以访问
-//private只有类内部可以访问
+```text
+可以直接操作是因为数据设置为了public  
+public是cpp的访问控制关键字 决定了谁能访问类中的成员（变量 函数）类外部也可以访问
+protected 只有类内部和派生类（子类）可以访问
+private只有类内部可以访问
+```
 ```cpp
 class Student
 {
@@ -1693,7 +1721,7 @@ void Student::printInfo
 //简单的函数 放到类内部定义
 //复杂的函数 放到类外部定义
 ```
-类的声明可以放到student.hpp
+类的声明可以放到student.hpp  
 类函数的定义可以放到student.cpp 要#include "student.hpp"
 
 ```
@@ -1706,13 +1734,12 @@ project(persondemo)
 ADD_EXECUTABLE(persondemo main.cpp student.cpp)
 //建议进到build cmake ..
 ```
-## Constructors and Destructors
-构造函数和析构函数
+## Constructors and Destructors构造函数和析构函数
 ## Constructor
 Different from struct in C, a constructor will be invoked when creating an object of a class
--struct in C: allocate memory
--class in C++:alocate memory and invoke constructor
-//The compiler will generate one with empty body
+- struct in C: allocate memory
+- class in C++:alocate memory and invoke constructor
+//The compiler will generate one with empty body  
 The constructor's name is the same with the class and have no return value
 ```cpp
 class Student
@@ -1737,7 +1764,7 @@ class Student
 ```
 
 
-The members can also be initialized as follows
+The members can also be initialized as follows  
 构造函数的另一种写法
 ```cpp
 Student(const char * initName):born(0),male(true)
@@ -1770,15 +1797,15 @@ public:
 	}
 	
 ```
-运行程序判断哪个构造函数被使用了
-Student yu;
-//输出为Constructor:Person()
-Student Li("Li");
-//输出为Constructor:Person(cosnt char*)
-Student xue=Student("XueQikun",1962,true);
-//输出为Constructor:Person(const char,int,bool)
-且打印出问题了因为strncpy只拷贝了四个字符 char name[4]
-无终止符导致乱码
+运行程序判断哪个构造函数被使用了  
+Student yu;  
+//输出为Constructor:Person()  
+Student Li("Li");  
+//输出为Constructor:Person(cosnt char*)  
+Student xue=Student("XueQikun",1962,true);  
+//输出为Constructor:Person(const char,int,bool)  
+且打印出问题了因为strncpy只拷贝了四个字符 char name[4]  
+无终止符导致乱码  
 
 ## Destructor
 销毁一个函数
@@ -2338,6 +2365,92 @@ t2=t1;//copy assignment 使用等号重载
 
 ## An Example with Dynamic Memory
 //指针和内存管理
+```cpp
+class MyString
+{	
+	private:
+		int buf_len;
+		char * characters;
+	public:
+		MyString(int buf_len=64,const char * data=NULL)
+		{
+			this->buf_len=0;
+			this->characters=NULL;
+			create(buf_len,data);//调用create函数 申请内存并初始化
+		}
+		~MyString()
+		{
+			delete [] this->characters;
+		}
+		bool create(int buf_len,const char * data)
+		{
+			this->buf_len=buf_len;
+			if(this->buf_len!=0)
+				{
+					this->characters=new char[this->buf_len]{};
+					if(data)
+						strncpy(this->characters,data,this->buf_len);
+				}
+			return true;
+		}
+
+	friend std::ostream & operator<<(std::ostream & os, const MyString & ms)
+		{
+			os<<"buf_len= "<<ms.buf_len;
+			os<<", characters= "<<static_cast<void*>(ms.characters);
+			return os;
+		}
+
+};
+
+
+int main()
+{
+	MyString str1(10,"Shenzhen"):	//MyString str1创建第一个对象 值针指向S
+	cout<<"str1: "<<str1<<endl;
+
+	MyString str2=str1;		//调用了copy constructor 没有定义！
+	cout<<"str2: "<<str2<<endl;	//调用了默认构造函数str2也指向了S
+
+
+	MyString str3;			//申请64字节 创建了第三个对象
+	cout<<"str3: "<<str3<<endl;
+	str3=str1;			//赋值操作 默认把str1对象的成员拷贝给str1 指向第一块内存			
+	cout<<"str3: "<<str3<<endl;
+}
+//系统报错了！	
+//同一块内存被多次释放了！ 导致了内存泄漏
+```
+
+问题如何解决？
+### Solution1: Hard Copy
+- Provide a user-defined copy constructor
+MyString::MyString(const MyString & ms)
+{
+	this->buf_len=0;
+	this->characters=NULL;
+	create(ms.buf_len,ms.characters);
+
+}
+- create() release the current memory and allocate a new one
+- this->characters will not point to ms.characters
+- It's hard copy!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
