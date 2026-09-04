@@ -313,6 +313,7 @@ float mysquare(float value)
 	if(value>=1.0f || value<=0)
 	{
 	cerr<<"The input is out of range."<<endl;
+	//ostream 的对象 用于输出警告和错误信息
 	goto EXIT_ERROR;
 	}
 	result=value * value;
@@ -857,6 +858,7 @@ delete psa1;//deallocate the memory of the array, and call the destructor of the
 delete []psa2;//deallocate the memory of the array, and calll the destructors of all elements	
 //调用每个元素的析构函数 释放整块内存 安全
 //涉及到类 结构体 数组最好加[]
+//析构函数释放的不是对象自己所在的栈内存 而是对象内部指针指向的内存
 ```
 
 # 6.Functions
@@ -2409,7 +2411,7 @@ int main()
 	MyString str1(10,"Shenzhen"):	//MyString str1创建第一个对象 值针指向S
 	cout<<"str1: "<<str1<<endl;
 
-	MyString str2=str1;		//调用了copy constructor 没有定义！
+	MyString str2=str1;		//调用了copy constructor 但是他没有另外定义！只是调用了系统默认的copy函数
 	cout<<"str2: "<<str2<<endl;	//调用了默认构造函数str2也指向了S
 
 
@@ -2419,12 +2421,21 @@ int main()
 	cout<<"str3: "<<str3<<endl;
 }
 //系统报错了！	
-//同一块内存被多次释放了！ 导致了内存泄漏
-```
+//同一块内存被多次释放了！ 
+//另外MyString str3的时候申请了64个字节 但是str3又指向了str1 这块申请的内存没有指针指向了 会造成内存泄漏
 
-问题如何解决？
+```
+### 初始化和赋值操作的区别
+1. 发生时机不同 初始化发生在变量首次获得内存那一刻 赋值发生在变量已经存在之后
+2. 内存处理不同 初始化内存是干净的 直接在该内存上构建对象  赋值是内存已经存有旧数据 赋值操作先处理旧数据（对于类类型，可能需要先释放旧资源，再拷贝新资源）
+3. 对const 和&不同
+当有指针作为类或者结构体的成员时，需要自定义一个赋值 
+
+- 问题如何解决？
 ### Solution1: Hard Copy
-- Provide a user-defined copy constructor
+- Provide a user-defined copy constructor 使用一个自定义的拷贝构造函数 
+- 让所有对象都拥有自己的内存
+```cpp
 MyString::MyString(const MyString & ms)
 {
 	this->buf_len=0;
@@ -2432,24 +2443,386 @@ MyString::MyString(const MyString & ms)
 	create(ms.buf_len,ms.characters);
 
 }
+```
 - create() release the current memory and allocate a new one
 - this->characters will not point to ms.characters
 - It's hard copy!
+```cpp
+//构造函数的重载
+class MyString {
+public:
+    // ① 默认构造（无参）
+    MyString();
+    
+    // ② 带参构造（一个参数）
+    MyString(const char* s);
+    
+    // ③ 带参构造（两个参数）
+    MyString(int len, const char* s);
+    
+    // ④ 拷贝构造（参数是自身引用）← 你写的这个！
+    MyString(const MyString & ms);
+};
+```
+// 这个是构造函数的重载
+```cpp
+// 拷贝构造函数的调用场景
+MyString str1(10,"Shenzhen");
+MyString str2(str1);
+MyString str3=str1;
+
+```
+
+- 另外 还需要重载operator= provide a user-defined copy assignment
+```cpp
+MyString & operator=(const MyString &ms)
+{
+	create(ms.buf_len,ms.characters);
+	return *this;
+}
+
+//create函数重写
+bool create(int buf_len,const char * data)
+{
+	release();
+	this->buf_len=buf_len;
+
+	if(this->buf_len!=0)
+	{
+		this->characters=new char[this->buf_len]{};
+	}
+	if(data)
+		strncpy(this->characters,data,this->buf_len);
+}
+
+```
 
 
+## Solution2 soft copy
+Problem of Hard Copy
+- Frequently allocate and free
+- Time consuming when memory is big
+
+### CvMat Struct
+```cpp
+typedef struct CvMat
+{
+	int type;
+	int step;
+
+	/*for internal use only*/
+	int* refcount;
+	int hdr_refcount;
+
+	union
+	{
+		uchar* ptr;
+		short* s;
+		int* i;
+		float* fl;
+		double* db;
+	}data;
 
 
+}
+//多申请四块内存 refcount+1 -1引用记数
+```
+### Solution in OpenCV
+- The allocated memory can 
 
+看不懂
+AI
+好的，我们只聚焦于 **C++ 中 OpenCV 的浅拷贝（Soft Copy）是如何实现的**。
 
+OpenCV 中所有的图像数据都存储在 `cv::Mat` 类里。它的实现核心是：**引用计数（Reference Counting）** 和 **共享数据体（Shared Data Block）**。
 
+---
 
+### 1. 核心数据结构：矩阵头 + 数据体
 
+在源码中，`cv::Mat` 主要包含两个关键部分：
 
+1.  **矩阵头（Header）**：存储图像的尺寸、类型、步长等信息。
+2.  **数据指针（data）**：指向实际像素存储位置的 `uchar*` 指针。
+3.  **引用计数指针（refcount）**：指向一个整数（`int*`），用于记录当前有多少个 `Mat` 对象共享同一块 `data` 内存。
 
+**源码简化示意（来自 `core.hpp`）：**
+```cpp
+class CV_EXPORTS Mat {
+public:
+    uchar* data;           // 指向图像数据的指针
+    int* refcount;         // 指向引用计数器的指针
+    
+    int rows, cols;        // 尺寸信息
+    size_t step;           // 每一行的字节数
+    // ... 其他成员（type, flags 等）
+};
+```
 
+---
 
+### 2. 浅拷贝（Soft Copy）的构造函数与赋值运算符
 
+当你执行 `cv::Mat B = A;` 或 `B = A;` 时，OpenCV 不会复制 `data` 指向的内存，而是进行**浅拷贝（Shallow Copy）**。
 
+#### ① 拷贝构造函数的简化逻辑
+```cpp
+// 简化的拷贝构造函数逻辑
+Mat::Mat(const Mat& m) {
+    flags = m.flags;
+    rows = m.rows;
+    cols = m.cols;
+    data = m.data;           // ✅ 直接复制指针（指向同一块内存）
+    step = m.step;
+    
+    // ✅ 关键：引用计数处理
+    if (m.refcount) {
+        refcount = m.refcount;  // 共享同一个引用计数变量
+        (*refcount)++;           // 引用计数 +1
+    } else {
+        refcount = NULL;
+    }
+}
+```
+
+#### ② 赋值运算符的简化逻辑
+```cpp
+// 简化的赋值运算符逻辑
+Mat& Mat::operator=(const Mat& m) {
+    if (this != &m) {
+        release();            // 1. 先释放当前对象占有的旧内存（减引用计数）
+        flags = m.flags;
+        rows = m.rows;
+        cols = m.cols;
+        data = m.data;        // 2. 共享新数据
+        step = m.step;
+        refcount = m.refcount; // 3. 共享引用计数
+        
+        if (refcount) {
+            (*refcount)++;     // 4. 引用计数 +1
+        }
+    }
+    return *this;
+}
+```
+
+#### ③ 子区域（ROI）也是浅拷贝
+当你提取图像的感兴趣区域（Region of Interest）时：
+```cpp
+cv::Rect roi(10, 10, 100, 100);
+cv::Mat D = A(roi); 
+```
+这同样只复制头部信息，修改 `data` 指针和 `step` 偏移量，使 `D` 指向 `A` 数据体的指定子区域，而不复制像素数据。
+
+---
+
+### 3. 内存释放机制（引用计数归零）
+
+当 `Mat` 对象析构或被重新赋值时，会调用 `release()` 函数：
+
+```cpp
+// 简化的 release 逻辑
+void Mat::release() {
+    if (refcount) {
+        (*refcount)--;   // 引用计数减 1
+        if ((*refcount) == 0) {
+            // ✅ 只有引用计数为 0 时，才真正释放数据内存
+            if (data) {
+                delete[] data;
+            }
+            delete refcount;  // 释放引用计数器本身
+        }
+    }
+    data = NULL;
+    refcount = NULL;
+}
+```
+
+**核心规则：**  
+只有当最后一个引用该数据的 `Mat` 对象被销毁或释放时，`refcount` 才会变为 0，此时才会真正调用 `delete[]` 释放像素数据内存。
+
+---
+
+### 4. 为什么 OpenCV 选择引用计数，而非写时复制（COW）？
+
+你可能在别处听说过“写时复制”（Copy-On-Write），即当你修改共享数据时，系统会**自动**为你复制一份独立的内存，从而不影响其他对象。
+
+**OpenCV 不支持 COW！** 这是官方的一个明确选择。原因是：
+
+-   **COW 开销大**：实现 COW 需要复杂的原子操作和锁机制来控制并发访问，这会拖慢大多数“只读”操作的性能。
+-   **明确性**：OpenCV 的设计者认为，如果程序员想修改数据，就应该明确知道是在修改共享数据。如果需要独立副本，请显式调用 `clone()` 或 `copyTo()`。
+
+**因此，当你执行以下操作时：**
+```cpp
+Mat A = imread("image.jpg");
+Mat B = A;          // 浅拷贝，共享内存
+B.at<uchar>(0,0) = 255; // 修改 B 的第一个像素
+```
+**A 的第一个像素也会被改为 255！** 因为它们在内存中是同一块数据，没有任何自动保护。
+
+---
+
+### 5. 总结：浅拷贝的本质
+
+用一句话总结 OpenCV 在 C++ 中的浅拷贝实现：
+
+> **只复制了 `cv::Mat` 对象的栈上内存（矩阵头），让多个对象共享同一个堆上的像素数据块，并通过引用计数器（`refcount`）管理该数据块的生命周期。**
+
+# Smart Pointers
+- 只申请 不释放
+- Smart Pointers are used to make sure that an object can be deleted when it is no longer used.
+- Several shared pointers can share/point to the same object
+- The object is destroyed when no share_ptr points to it.
+```cpp
+std::shared_ptr<MyTime> mt1(new MyTime(10));
+std::shared_ptr<MyTime> mt2=mt1;
+//指向同一个对象
+
+auto mt1=std::make_shared<MyTime>(1,70);
+//两种创建智能指针的方式
+```
+我们接着刚才 OpenCV 的引用计数，来系统地讲一下 **C++ 智能指针（Smart Pointer）**。
+
+其实 OpenCV 的 `cv::Mat` 内部用的“引用计数”机制，和 C++ 智能指针的核心思想**一模一样**：**自动管理堆内存，让程序员不用手动 `new` 和 `delete`**。
+
+智能指针是 C++ 标准库（`<memory>`）提供的一个强大工具，用于解决内存泄漏、悬垂指针等问题。
+
+---
+
+### 一、为什么需要智能指针？
+
+传统 `new` / `delete` 容易出错：
+
+```cpp
+void func() {
+    int* p = new int(10);
+    // ... 如果这里抛出异常 或 提前 return ...
+    delete p;  // 这一行没执行到 → 内存泄漏！
+}
+```
+
+**智能指针的解决方案：** 它本质是一个**类对象**，利用 **RAII（资源获取即初始化）** 特性：
+- 构造时接管裸指针（`new` 出来的内存）。
+- 析构时自动 `delete` 释放内存。
+
+---
+
+### 二、C++ 标准库中的四种智能指针（C++11 起）
+
+| 智能指针 | 核心特点 | 类比 |
+| :--- | :--- | :--- |
+| **`unique_ptr`** | 独占所有权，不允许拷贝，只能移动 | 独享一间房，唯一的钥匙 |
+| **`shared_ptr`** | 共享所有权，引用计数为 0 时释放 | 共用一间房，多把钥匙，最后一把钥匙丢了房子就拆 |
+| **`weak_ptr`** | 配合 `shared_ptr` 使用，不增加引用计数，解决循环引用 | 一把只能看房、不能开门的“备用钥匙” |
+| **`auto_ptr`** | **（已弃用）** C++98 的旧产物，有严重缺陷，不要用 | — |
+
+---
+
+### 三、核心详解
+
+#### 1. `std::unique_ptr`（独占所有权）
+
+最常用的轻量级指针，性能与裸指针几乎无差。
+
+```cpp
+#include <memory>
+
+std::unique_ptr<int> p1(new int(5));
+// 或推荐使用：auto p1 = std::make_unique<int>(5);
+
+// ❌ 错误：不能拷贝
+// std::unique_ptr<int> p2 = p1; 
+
+// ✅ 正确：可以移动（转移所有权）
+std::unique_ptr<int> p2 = std::move(p1); 
+// 此时 p1 变为空（nullptr），p2 拥有资源
+
+// 离开作用域时，p2 自动 delete
+```
+
+**典型使用场景：** 作为函数的返回值、容器中的元素、明确的“唯一拥有者”场景。
+
+#### 2. `std::shared_ptr`（共享所有权）
+
+这与 `cv::Mat` 的机制最像。它内部有一个**引用计数（Reference Count）**。
+
+```cpp
+std::shared_ptr<int> sp1 = std::make_shared<int>(10); // 引用计数 = 1
+std::shared_ptr<int> sp2 = sp1;                       // 引用计数 = 2
+
+sp2.reset(); // sp2 释放，引用计数减为 1
+// sp1 离开作用域时，引用计数变为 0，自动 delete
+```
+
+**关键：** `shared_ptr` 是**线程安全**的（引用计数的加减是原子的），但它指向的数据本身不是线程安全的。
+
+#### 3. `std::weak_ptr`（弱引用，解决循环引用）
+
+当两个 `shared_ptr` 互相引用时，会产生**循环引用**，导致内存泄漏：
+
+```cpp
+struct Node {
+    std::shared_ptr<Node> next;  // 循环引用
+};
+
+auto a = std::make_shared<Node>();
+auto b = std::make_shared<Node>();
+a->next = b;
+b->next = a; // 循环引用！a 和 b 永远无法释放
+```
+
+使用 `weak_ptr` 打破循环：
+
+```cpp
+struct Node {
+    std::weak_ptr<Node> next;  // 不增加引用计数
+};
+```
+
+`weak_ptr` 不能直接访问资源，需要调用 `lock()` 临时转换为 `shared_ptr`（如果资源还存在的话）。
+
+---
+
+### 四、对比：OpenCV `cv::Mat` vs `std::shared_ptr`
+
+既然 `cv::Mat` 也有引用计数，那它和 `std::shared_ptr` 有什么区别？
+
+| 特性 | `cv::Mat` | `std::shared_ptr` |
+| :--- | :--- | :--- |
+| **管理对象** | 图像像素数据（数组） | 任意类型的对象（`int`、`class` 等） |
+| **引用计数位置** | 隐藏在 `Mat` 内部（`refcount` 字段） | 由 `shared_ptr` 的控制块管理 |
+| **拷贝行为** | 默认浅拷贝（共享数据） | 默认拷贝会增加引用计数（符合直觉） |
+| **是否支持定制删除器** | ❌ 不支持 | ✅ 支持（可自定义释放方式，如 `fclose`） |
+
+**一句话总结：** `cv::Mat` 是一个**专门为图像数据设计**的“类 `shared_ptr`”容器。
+
+---
+
+### 五、最佳实践（关键规则）
+
+1.  **优先使用 `std::make_unique` / `std::make_shared`**，而不是直接用 `new`（更安全、更高效）。
+    ```cpp
+    auto p = std::make_unique<MyClass>(arg1, arg2);
+    ```
+
+2.  **能用 `unique_ptr` 就别用 `shared_ptr`**，除非明确需要共享所有权。
+
+3.  **永远不要用裸指针 `delete` 智能指针管理的资源**，否则会引发双重释放。
+
+4.  **警惕循环引用**：一旦发现两个类互相持有对方的 `shared_ptr`，考虑将其中一个改为 `weak_ptr`。
+
+---
+
+### 六、总结：智能指针的本质
+
+> **智能指针是“资源管理类”的典型应用，它将堆内存的生命周期与栈上的对象绑定，利用析构函数自动释放内存，彻底告别了手动 `delete` 的烦恼。**
+
+如果你还想看一个具体的实战例子（比如在类成员中使用 `shared_ptr`，或者在容器中存储 `unique_ptr`），我可以继续展开。
+
+看不懂
+
+# 12
+## Improve your source code
 
 
 
