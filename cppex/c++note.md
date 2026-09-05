@@ -14,7 +14,7 @@ separate the source code into multiple files
 
 eg.  
 同一个文件夹下  
-main.cpp   mul.hpp(用于存放函数声明)  mul.cpp(用于写函数体)  
+main.cpp   mul.hpp(用于存放函数声明) and mul.cpp(用于写函数体)  
 其中main.cpp中`#include "mul.hpp"`即可  
 分开编译compile  
 ```bash
@@ -214,15 +214,17 @@ a=3.3;
 output a?//输出为3 因为a已经被定义为了int 变量类型不改变  
 
 Arithmetic operators  
-+ - * / ^ %   
-bitwise NOT	~a  
-bitwise AND	a & b  
-bitwise OR	a | b  
-bitwise XOR	a ^ b  
-bitwise left shift	a << b  
-bitwise right shift	a >> b  
+\+ \- \* / ^ %   
+| 类别 | 运算符 |
+|------|------|
+|bitwise NOT |	~a|  
+|bitwise AND |	a & b|  
+|bitwise OR |	a | b|  
+|bitwise XOR |	a ^ b|  
+|bitwise left shift |	a << b|  
+|bitwise right shift |	a >> b|  
 优先级  
-a++ ++a */ +- <<>>  
+a++ ++a */ +- << >>  
 
 implicit conversion隐式转换  
 explicit conversion显式转换  
@@ -233,7 +235,7 @@ float f=17/5;//3
 精度低的变量和精度高的变量进行运算 结果会是精度高的那种类型  
 
 
-#3.控制流语句 和 循环
+# 3.控制流语句 和 循环
 
 ```cpp
 if statement
@@ -252,12 +254,15 @@ else if (condition2)
 else
 {}
 ```
+```cpp
+求绝对值
 bool isPositive=true;  
 int factor=0;  
 factor=isPositive?1:-1;  
-或者写成factor=(isPositive)*2-1  
-(条件)?(true时返回的值):(false时返回的值)  
-Conditons  
+//或者写成factor=(isPositive)*2-1  
+//(条件)?(true时返回的值):(false时返回的值)  
+```
+## Conditons  
 the condition shuold be an expression which is convertible to bool  
 relational expressions  
 == != <= >= < <  
@@ -281,7 +286,7 @@ int *p=new int[1024];
 if (!p)//if p==NULL
 	cout<<"Memory allocation failed"<<endl;
 
-##while loop
+## while loop
 
 ```cpp
 while(){}
@@ -290,7 +295,7 @@ do
 {
 }while();
 ```
-break跳出循环
+break;跳出循环
 continue 跳出本次循环 进入下次循环
 
 ```cpp
@@ -299,11 +304,11 @@ for (init-clause;cond-expression;iteration-expression)
 {}
 ```
 
-while(num>0) -> for(;num>0;)
+while(num>0) -> for(;num>0;)  
 
-for(;;)->while(true)
+for(;;)->while(true)  
 
-goto跳转
+goto跳转  
 
 ```cpp
 eg.希望算出0-1的浮点数的平方
@@ -419,17 +424,17 @@ cout<<name2<<endl;
 
 字符串的操作String manipulation and examination
 
-copy
+#### copy
 ```cpp
 strncpy(char *dest,const char *src,size_t count);
 //拷贝到\0结束
 ```
 
-append
+#### append
 ```cpp
 strcat(char *dest,const char *src);
 ```
-compare
+#### compare
 ```cpp
 strcmp(const char *lhs,const char *rhs)
 //比较两个字符串是否相等 相等返回0
@@ -439,7 +444,7 @@ strcmp(const char *lhs,const char *rhs)
 
 
 ### string class
-```
+```cpp
 using namespace std;
 string str1="Hello";
 string str2="SUSTech";
@@ -448,8 +453,8 @@ cout<<"result"+result<<endl;
 cout<<"The length is "<<result.length()<<endl;
 cout<<"str1<str2 is "<<(str1<str1)<<endl;
 ```
-```cpp
 
+```cpp
 ex4
 #include <iostream>
 using namespace std;
@@ -477,6 +482,7 @@ int main()
 ```
 
 ## Structure Unions Enumerations
+### Basic concept
 a struct is a type consisting of a sequence of members
 ```cpp
 struct Student{
@@ -490,14 +496,15 @@ stu1.born=2000;
 stu.male=true
 ```
 通过  . 访问结构体成员  
-也可以这样初始化  
+
+初始化的另一种办法  
 ```cpp
 struct Student stu={"Yu",2000,true};
 Student stu={.name="Yu", .born=2000, .male=true};
 ```
 
 
-c++可去除struct  
+c++可省略struct  
 c中可通过typedef来操作  
 ```c
 typedef
@@ -653,7 +660,7 @@ p->member
 //两种形式等价
 ```
 
-```
+```cpp
 
 eg.
 struct Student
@@ -705,51 +712,57 @@ return 0;
 ```
 
 ### Pointers and arrays
-Student students[128] 结构体数组
-Student * p0=&students[0];
-Student * p1=&students[1];
-第[0],[1]个结构体的首地址
-students[1].born=2000;
-p1->born=2000;
-解引用蕴含在表达式当中
-&students 
-students 
-&students[0]
-都是数组的首地址
-
-Pointer arithmetic
-p+num  points to the num-th element of the array p
-p-num points to the -num-th element
+```cpp
+Student students[128];
+//结构体数组  
+Student * p0=&students[0];  
+Student * p1=&students[1];  
+第[0],[1]个结构体的首地址  
+//结构体指针
+students[1].born=2000;  
+p1->born=2000;  
+解引用蕴含在表达式当中  
+&students   students   &students[0]  都是数组的首地址  
+```
+### Pointer arithmetic
+p+num  
+points to the num-th element of the array p
+p-num  
+points to the -num-th element
 会根据指针的类型偏移相应的字节数
+```cpp
 int numbers[4]={0,1,2,3};
 int *p=numbers+1; //指向1
-p++;
+p++;//指向2
 
-*p=20;				3	30
-*(p-1)=10;		   p->	2	20
-p[1]=30;  p当数组用		1	10
-				0
+*p=20;	//把2改为20
+*(p-1)=10;	//把1改为10	  
+p[1]=30; 	//把3改为30
+//p当数组用
+```				
 
-宏
+### 宏
+```cpp
 #define PRINT_ARRAY(array,n)\ \
 for (int idx=0;idx<(n);idx++)\
 	cout<<"array["<<idx<<"]="<<(array)[idx]<<endl;
 //转义 使宏可以写成多行
-
-Array is a constant pointer
-the total size of all elements in an array can be got by sizeof
-but sizeof operator to a pointer will return the size of the address(4 or 8)
-会返回地址所占用的字节数
-Allocate memory
-栈（默认内存）通常较小
-堆（申请的内存）取决于电脑的剩余内存
-如果程序需要处理一张数据量很大的图片 一个3D模型等 
-放到栈上 可能导致栈溢出 程序崩溃
-所以要申请放到堆里
-或者
-内存需要活到函数结束之后
-栈上的变量：函数执行完后自动销毁
-堆上的变量：不delete就永远存在
+```
+### 关于数组和指针的补充说明
+Array is a constant pointer  
+the total size of all elements in an array can be got by sizeof  
+but sizeof operator to a pointer will return the size of the address(4 or 8)  
+会返回地址所占用的字节数  
+## Allocate memory
+栈（默认内存）通常较小  
+堆（申请的内存）取决于电脑的剩余内存  
+如果程序需要处理一张数据量很大的图片 一个3D模型等   
+放到栈上 可能导致栈溢出 程序崩溃  
+所以要申请放到堆里  
+或者  
+内存需要活到函数结束之后  
+栈上的变量：函数执行完后自动销毁  
+堆上的变量：不delete就永远存在  
 ```cpp
 eg.在游戏里创建了一个Player 对象 玩家要活着直到被杀死或者游戏结束
 struct Player{};
@@ -760,9 +773,9 @@ Player* createPlayer()
 }
 他必须跨函数存活 故必须申请放到堆里
 ```
-C style
-指针指向的内存是动态申请的
-程序运行时 操作系统会给程序的运行分配一段空间
+### C style
+指针指向的内存是动态申请的  
+程序运行时 操作系统会给程序的运行分配一段空间  
 ```text
 __________________________
           stack            ← 栈：局部变量、函数调用现场
@@ -789,7 +802,7 @@ malloc函数原型void* malloc(size_t size) 字节数
 int * p1=(int*)malloc(4);  
 强制转换为整型指针  
 
-## 释放内存
+#### 释放内存
 The dynamically allocated memory must be deallocated explicitly  
 `void free(void* ptr)`  
 `p=(int*)malloc(4*sizeof(int));//内存被浪费了`  
@@ -806,8 +819,8 @@ void foo()
 //有申请 有释放！
 ```
 
-## CPP style  
-### 申请内存`new new[]`  
+### CPP style  
+#### 申请内存`new or new[]`  
 Operator new is similar with malloc() but with more features   
 ```cpp
 int *p1=new int;
@@ -820,6 +833,8 @@ int *p3=new int(5)
 //可把括号改为花括号  
 //allocate an int, initialize to 5;
 
+
+//结构体
 Student * ps1=new Student;			
 //allocate a Student object, default initializer
 Student * ps2=new Student {"Yu",2020,1};	
@@ -827,10 +842,11 @@ Student * ps2=new Student {"Yu",2020,1};
 
 int * pa1=new int[16];
 //allocate 16 int 未初始化
-int * pa2=new int[16];
+int * pa2=new int[16]();
 //allocate 16 int, zero initialized
 int * pa4=new int[16]{1,2,3}; 
 //first 3 elements are initialized to 1,2,3, the rest 0
+
 
 Student * psa1=new Student[16];//allocate memory for 16 Student objects, default initializer
 Student * psa2=new Student[16]{{"Li",2000,1},{"Yu",2000,0}};//初始化前两个其他置0
@@ -845,13 +861,13 @@ int* arr=new int[5]{1,2,3,4,5};
 ```
 
 
-### 释放内存
+#### 释放内存
 ```cpp
-delete delete[]
+delete or delete[]
 delete p1;
 delete ps1;//deallocate memory
 delete pa1;
-delete []pa2;//deallocate the memory of the array
+delete[] pa2;//deallocate the memory of the array 注意遇到数组时需要使用delete[]
 
 delete psa1;//deallocate the memory of the array, and call the destructor of the first element 
 //释放全部内存但只调用第一个元素的析构函数 造成内存泄漏
@@ -861,8 +877,12 @@ delete []psa2;//deallocate the memory of the array, and calll the destructors of
 //析构函数释放的不是对象自己所在的栈内存 而是对象内部指针指向的内存
 ```
 
+
+
+
 # 6.Functions
 ```cpp
+//找矩阵中的最大值
 #include <iostream>
 #include <cfloat>
 using namespace std;
@@ -874,7 +894,7 @@ struct Matrix {
 };
 
 // 封装的函数：找矩阵最大值
-float findMaxValue(const Matrix& mat) {
+float findMaxValue(const Matrix& mat) {			//引用//
     float maxa = FLT_MIN;				//float类型的最小值
     for (int r = 0; r < mat.rows; r++) {
         for (int c = 0; c < mat.cols; c++) {
@@ -908,13 +928,13 @@ int main() {
     return 0;
 }
 
-还可以这样初始化
+//另一种初始化的办法
 Matrix matA={3,4};//三行四列
 matA.pData=new float[matA.rows*matA.cols]{1.f,2.f,3.f};//其他元素自动赋0
 ```
 
 ```cpp
-eg.
+//另一种写法
 #include<cfloat>
 #include<iostream>
 using namespace std;
@@ -924,7 +944,7 @@ struct Matrix
 	int columns;
 	float* pData;
 };
-float Matrix_Max(const Matrix& mat)//引用
+float Matrix_Max(const Matrix& mat)	//引用
 {
 	float maximum=FLT_MIN;
 	for(int i=0;i<mat.rows;i++)
@@ -944,11 +964,8 @@ int main()
 	//申请地址存放拷贝数据   原始数据在可执行程序里面
 	//mata.pData获得了拷贝数据的首地址
 	//函数获得了mata的地址 从而找到了pData这个成员变量自身在栈上的地址 之后读取了pData里存的值 堆的首地址 从而通过这个去堆上访问数据
-	cout<<3<<endl;
 	float maxa=Matrix_Max(mata);
-	cout<<4<<endl;
 	cout<<"The maximum element of matrix a is "<<maxa<<endl;
-	cout<<5<<endl;
 	delete[] mata.pData;
 	return 0;
 }
@@ -1017,14 +1034,17 @@ bool drawRectangle(int x1,int y1,int x2,int y2);
 
 ```cpp
 draw.cpp
+#include "draw.h"
 //用于写函数体
 ```
 
 ```cpp
 main.cpp
+#include "draw.h"
 ```
+//如果一个文件里需要用到iostream等头文件也要include进去
 
-How are functions called?
+### How are functions called?
 二进制指令一条条往里面搬运  
 函数调用会导致跳转  
 当前状态会被保存（压栈）  
@@ -1042,7 +1062,7 @@ The cost to call a function!
 int foo(int *p)
 {
 	(*p)+=10;
-	return *p
+	return *p;
 }
 
 int num1=20;
@@ -1051,6 +1071,7 @@ num2=foo(p);
 //传进去的是p地址的复制值
 //会改变num1的值 但是不改变p的值 依然是传值的逻辑
 ```
+
 If the structure is a huge one, such as 1K bytes  
 A copy will cost 1kb memory and time consuming to copy it.  
 So we can pass the pointer that stores the address of the structure or use reference  
@@ -1070,16 +1091,13 @@ References are much safer
 const struct Matrix & mat提供只读保护  
 
 
-使用Valgrind  
-Valgrind是一个内存测试、内存泄漏检测和性能分析工具  
-
 ```cpp
-ex6
 //引用和传址
 #include<iostream>
 using namespace std;
 void c(int &a)
-{a+=1;
+{
+	a+=1;
 }
 //定义了一个函数
 //c++的引用和c的取地址符号没有关系
@@ -1097,20 +1115,25 @@ return 0;
 `return;`只适用于void类型函数  
 return 语句会把其后的值自动转换成函数返回类型再返回 隐式类型转换  
 
-指针函数返回指针  
+#### 指针函数返回指针  
 ```cpp
+//...之前对Matrix结构体的定义
 Matrix* create_matrix(int rows,int cols)
 {
-//检查输入是否合法
+	//检查输入是否合法
 	Matrix *p=new Matrix{rows,cols};		//用于存放结构体的成员
-	p->pData=new float[p->rows*p->cols];		//用于存放矩阵数据
+	p->pData=new float[p->rows*p->cols]{};		//用于存放矩阵数据 先全部置0
 	//you should check if the memory is allocated successfully
 	//don't forget to release the memory
 	return p;
 }
+//后续赋值 
+//先用一个结构体指针接著函数返回值 Matrix* m=create_matrix(2,3);
+m->pData[0]=1.0f;
+//...
 ```
 
-结构体函数返回的是整个结构体
+#### 结构体函数返回的是整个结构体
 ```cpp
 Matrix createMatrix(int rows,int cols)
 {
@@ -1125,7 +1148,7 @@ int main()
 {
 	Matrix m=createMatrix(3,4);
 	return 0;
-	delete[] m.pData
+	delete[] m.pData;
 }
 ```
 函数调用暗含赋值操作 引用的等号更像是绑定 比普通的赋值更紧密  
@@ -1174,29 +1197,29 @@ inline float max_function(float a,float b)
 |                 内核空间                      |  ← 操作系统内核代码和数据  
 |          （用户态不可访问）                   |  
 +---------------------------------------------+  
-|                                              |  
+|                                               |  
 |             栈（Stack）                       |  ← 局部变量、函数参数、返回地址  
-|             ⬇ 向下增长                      |  
-|                                              |  
+|             ⬇ 向下增长                        |  
+|                                               |  
 +---------------------------------------------+  
 |                 空洞区域                      |  ← 栈和堆之间的未映射区域  
-|                                              |  
+|                                               |  
 +---------------------------------------------+  
-|                                              |  
-|             堆（Heap）                       |  ← new / malloc 动态分配的内存  
-|             ⬆ 向上增长                      |  
-|                                              |  
+|                                               |  
+|             堆（Heap）                        |  ← new / malloc 动态分配的内存  
+|             ⬆ 向上增长                        |  
+|                                               |  
 +---------------------------------------------+  
-|        未初始化数据段（.bss）                |  ← 未初始化的全局变量、静态变量  
-|                                              |     程序启动时由系统清零  
+|        未初始化数据段（.bss）                 |  ← 未初始化的全局变量、静态变量  
+|                                               |     程序启动时由系统清零  
 +---------------------------------------------+  
-|        已初始化数据段（.data）               |  ← 已初始化的全局变量、静态变量  
-|                                              |     可读可写  
+|        已初始化数据段（.data）                |  ← 已初始化的全局变量、静态变量  
+|                                               |     可读可写  
 +---------------------------------------------+  
 |             只读数据段（.rodata）             |  ← 字符串常量、const 修饰的全局变量  
-|                                              |     只读，不能修改  
+|                                               |     只读，不能修改  
 +---------------------------------------------+  
-|             代码段（.text）                  |  ← 编译后的机器指令  
+|             代码段（.text）                   |  ← 编译后的机器指令  
 |             只读，不可修改                    |     main 函数、普通函数、未展开的 inline 函数  
 +---------------------------------------------+  
 低地址                                        （传统情况下，代码段位于低地址）  
@@ -1215,7 +1238,7 @@ maxv=MAX_MACRO(num1++,num2++)
 
 
 
-lambda  
+## lambda  
 // Python 写法  
 add = lambda x, y: x + y  
 
