@@ -1239,56 +1239,69 @@ maxv=MAX_MACRO(num1++,num2++)
 
 
 ## lambda  
+```python
 // Python 写法  
 add = lambda x, y: x + y  
+```
 
-// C++ 写法（几乎一样）  
+```cpp
+// C++ 写法  
 auto add = [](int x, int y) { return x + y; };  
-
+```
+```cpp
 // C++甚至可以捕获外部变量  
 int result = add(10, 20);  // 30  
 int factor = 2;  
 auto multiply = [factor](int x) { return x * factor; };  // 捕获 factor  
 cout << multiply(5) << endl;  // 10  
-
+```
+```text
 语法  
 [捕获列表](参数列表)->返回类型{函数体}  
 返回类型可以让编译器自己猜  
+```
+```cpp
 auto sayHello=[](){cout<<"Hello";};  
 sayHello();  
 
 auto add=[](int a,int b)->int{return a+b;};  
 int result=add(3,5);  
-
+```
 
 # 7.
 Default arguments(C++)  
 默认参数  
 To call a function without providing one or more trailing arguments  
 不传这个参数 函数就采用默认参数开始工作  
-float norm(float x, float y, float z=0);  
+`float norm(float x, float y, float z=0);`  
 默认参数只能放到尾部  
 
-Overloading(C++)函数重载  
+## Overloading(C++)函数重载  
+```cpp
 C99  
 <math.h>  
-double	round(double x)  
-float	roundf(float x)  
+double		round(double x)  
+float		roundf(float x)  
+
 C++11  
 <cmath>  
-double	round(double x);  
-float	round(float x);  
+double		round(double x);  
+float		round(float x);  
 long double	round(long double x);  
+//round函数可以接收多种输入 
+```
 
-Function overloading  
+### Function overloading  
 多个函数使用同一个名字 但参数不同 类型、个数可以不同  
 参数名要相同 默认参数不可冲突  
+```cpp
 void foo(int a);  
 void foo(int a,int b);  
+```
 
 choose the function according to the argument   
 Argument-dependent lookup ADL  
-```
+```cpp
 eg. 
 int sum(int x,int y) 
 { 
@@ -1301,8 +1314,9 @@ float sum(float x,float y)
 	cout<<"sum(float,float) is called"<<endl;
 	return x+y;
 }
+
+double sum(double x,double y);
 ```
-`double sum(double x,double y);`
 不能重定义 需要参数类型不同 参数名相同  
 仅返回值不同 不可重载  
 
@@ -1329,6 +1343,7 @@ T sum(T x,T y)
 }
 其实就是把T全部替换掉
 //instantiates sum<double>(double,double)
+
 template double sum<double>(double,double);
 
 template char sum<>(char,char);
@@ -1382,7 +1397,7 @@ struct Point
         int y;
 };
 template<>
-Point sum<Point>(Point pt1,Point pt2)		明确指定T为point
+Point sum<Point>(Point pt1,Point pt2)		//明确指定T为point
 {
         cout<<"The input type is "<<typeid(pt1).name()<<endl;
         Point pt;
@@ -1409,9 +1424,9 @@ eg.
 float norm_l1(float x,float y);
 float norm_l2(float x,float y);
 float (*norm_ptr)(float x,float y);
-要完全匹配
-norm_ptr=norm_l1;//pointing norm_l1
-norm_ptr=&norm_l2;//Pointing norm_l2
+要有括号 要完全匹配
+norm_ptr=norm_l1;	//pointing norm_l1
+norm_ptr=&norm_l2;	//Pointing norm_l2
 两种指向方式等价
 
 float len1=norm_ptr(-3.0f,4.0f);
@@ -1435,13 +1450,12 @@ struct Persion
 float norm_l1(float x,float y);
 float norm_l2(float x,float y);
 float (&norm_ref)(float x,float y)=norm_l1;
+Reference
+//函数别名
 ```
-函数别名
 
 函数名其实也是一个指针
 &function和function值相同 类型相同
-
-
 
 
 ## Recursive Function递归函数
@@ -1457,6 +1471,7 @@ void div2(double val)
 }
 如果条件改为val>-1.0 会报错
 ```
+```text
 Pros:
 Good at tree traversal  
 Less lines of source code  
@@ -1465,8 +1480,8 @@ Cons:
 Consume more stack memory  
 Maybe slow  
 Difficult to implement and debug  
-
-函数递归是一个栈结构 先进后出  
+```
+//函数递归是一个栈结构 先进后出  
 
 
 
@@ -1663,7 +1678,7 @@ data=0xABCE0698
 A struct in C is a type consisting of a sequence of data members  
 Some functions/statements are needed to operate the data menbers of an object of a struct type  
 操作结构体的数据危险且容易出错  
-类！是更好的选择  
+类(class)是更好的选择  
 ### Classes
 类不仅有成员数据还有成员函数（方法）
 ```cpp
@@ -1749,7 +1764,7 @@ void Student::printInfo
 类的声明可以放到student.hpp  
 类函数的定义可以放到student.cpp 要#include "student.hpp"
 
-```
+```text
 使用cmake
 
 cmake_minimum_required(VERSION3.12)
@@ -1757,8 +1772,10 @@ cmake_minimum_required(VERSION3.12)
 project(persondemo)
 
 ADD_EXECUTABLE(persondemo main.cpp student.cpp)
-//建议进到build cmake ..
+//建议进到build 文件夹
+cmake ..
 ```
+
 ## Constructors and Destructors构造函数和析构函数
 ## Constructor
 Different from struct in C, a constructor will be invoked when creating an object of a class
@@ -1772,13 +1789,13 @@ class Student
         private:
 		//...
 	public:
-		Student()
+		Student()		//构造函数名字和类名一样
 		{
 			name[0]=0;
 			born=0;
 			male=false;
 		}
-		//重载
+		//函数重载
 		Student(const char* initName,int initBorn,bool isMale)
 		{
 			setName(const char * s)
@@ -1786,6 +1803,12 @@ class Student
 			male=isMale;
 		}
 };
+
+//如果没有另外定义 那么系统默认生成的构造函数为
+//Student::Student(){
+	//空函数体 内置类型的值为垃圾值
+}
+//如果有初始化 则会在构造函数内部进行初始化
 ```
 
 
@@ -1808,11 +1831,13 @@ public:
 		male=false;
 		cout<<"Constructor:Person()"<<endl;
 	}
+	//Student s1;时调用 无参构造
 	Student(const char* initName):born(0),male(true)
-	{
+	{//:born(0),male(true)为初始化列表
 		setName(initName);
 		cout<<"Constructor:Person(const char*)"<<endl;
 	}
+	//Student s2("张三");时调用 只传姓名
 	Student(const char* initName,int initBorn,bool isMale)
 	{
 		setName(initName);
@@ -1820,8 +1845,9 @@ public:
 		male=isMale;
 		cout<<"Constructor:Person(const char,int,bool)"<<endl;
 	}
-	
+	//Student s3("李四",2000,true);时调用 完整参数
 ```
+```cpp
 运行程序判断哪个构造函数被使用了  
 Student yu;  
 //输出为Constructor:Person()  
@@ -1831,12 +1857,14 @@ Student xue=Student("XueQikun",1962,true);
 //输出为Constructor:Person(const char,int,bool)  
 且打印出问题了因为strncpy只拷贝了四个字符 char name[4]  
 无终止符导致乱码  
-
+//不写constructor 只能直接给成员赋值 或是调用成员函数赋值 初始化不够方便简单
+```
 ## Destructor
-销毁一个函数
+```text
 The destructor will be invoked when object is destryed
 Be formed from the class name preceded by a tilde ~
 Have no return value, no parameters
+```
 
 ```cpp
 class Student
@@ -1850,8 +1878,10 @@ class Student
 			male=false;
 			cout<<"Constructor:Person()"<<endl;
 		}
-		~Student()
-		{
+		...
+		~Student()		//析构函数 有申请内存才需要
+		{	
+			cout<<"To destroy object"<<endl;
 			delete [] name;
 		}
 
@@ -1877,11 +1907,12 @@ int main()
 
 	Student * zhou=new Student("Zhou",1991,false);
 	zhou->printInfo();
-	delete zhou;
+	delete zhou;		先执行delete[] name再释放对象本身 执行delete zhou
 	return 0;
 }
 //对象会在作用域结束之后会被销毁
-new出来的对象需要手动销毁
+//new出来的对象需要手动销毁 
+//如果一个程序一直运行下去，new申请的内存不会自动销毁 
 ```
 
 
@@ -1891,12 +1922,12 @@ Student * class1=new Student[3]
 {
 	{"Tom",2000,true},
 	{"Bon",2001,true},
-	{"Amy",2002,false},...
+	{"Amy",2002,false}
 };
 class1[1].printInfo();
 //delete class1;  只调用第一个对象的析构函数
 //or
-//delete []class1;//调用每一个对象的析构函数
+//delete[] class1;//调用每一个对象的析构函数
 //应该选择后者
 //只释放内存不调用析构函数会导致永远失去对这块内存的控制权
 //就好像住酒店 释放内存就是退房，把房卡交给酒店 告诉外界这个房间可以住人
@@ -1904,7 +1935,7 @@ class1[1].printInfo();
 //长期下去 会减少内存 减慢运行速度
 ```
 
-### this pointer
+## this pointer
 How does a member function know which name?
 ```cpp
 Student yu=Student{"Yu",2000,true};
@@ -1916,11 +1947,15 @@ void setName(const char* s)
 	strncpy(name,s,1024);
 }
 ```
+
+```text
 当两个不同的对象调用同一个成员函数的时候 这个函数怎么直到该修改哪个对象的数据
 serName 如何直到这一次要修改的是yu还是amy的数据？
 编译器传了一个this 指针！
 All methods in a function have a this pointer
 It is set to the address of the object that invokes the mothod
+```
+
 ```cpp
 void setBorn(int b)
 {
@@ -1951,8 +1986,8 @@ Student(const char * name,int born,bool male)
 //函数内部可使用当前对象的指针
 ```
 
-### const and static members
-const Variables
+## const and static members
+### const Variables
 ```cpp
 #define Value 100 (C)
 const int value=100;
@@ -1960,24 +1995,25 @@ const int * p_int;
 int const * p_int;
 //指针指向的内容不能透过指针修改
 
-int * const p
+int * const p;
 //指针自己存放的地址不能被修改
 //const 在*的哪一侧 哪一侧就无法改变
 
-void func(const int *)
+void func(const int *);
+void func(const int &);
 //常用于函数 保证传入变量不被修改 更安全
 
 ```
 
-const Members
--const member variables behavior similar with normal const variables
--const member functions promise not to modify member variables 
-//函数不可修改成员变量
+### const Members
+- const member variables behavior similar with normal const variables
+- const member functions promise not to modify member variables 
+- 此时函数不可修改成员变量
 ```cpp
 class Student
 {
 	private:
-		const int BMI=24;
+		const int BMI=24;	//const members 
 		//...
 	public:
 		Student()
@@ -1985,26 +2021,24 @@ class Student
 			BMI=25;
 			//...
 		}
-		int getBorn() const
+		int getBorn() const	//const members
 		{
 			born++;//会报错 无法修改成员变量
 			return born;
-
 		}
-
-
-}
+};
 ```
 
 
 ### static members
-static members are not bound to class instances.
-//静态成员不绑定到类的实例 变量只有一份 被所有成员共享
+- static members are not bound to class instances.
+- 静态成员不绑定到类的实例 变量只有一份 被所有成员共享
 ```cpp
 class Student
 {
 	private:
-		static size_t student_total;//declaration only只声明
+		static size_t student_total;	//declaration only, used to count the number of members 
+		//inline static siez_t student_total=0;c++17, definition outside isn't need
 	public:
 		Student()
 		{
@@ -2012,36 +2046,44 @@ class Student
 		}
 		~Student()
 		{
-			student_total--;
+			student_total--;	每析构一个 总数减1
 		}
 		static size_t getTotal() {return student_total;}
 		//静态函数
 
-};
-//definition it here
-size_t Student::student_total=0;
-类外定义 静态成员必须在类外单独定义 分配内存
+}
 
+size_t Student::student_total=0;
+//definite student_total here
+//类外定义 静态成员必须在类外单独定义 分配内存
 //可以在Constructor和Destructor中执行一个打印命令观察输出。
+
 int main()
 {	
 	cout<<"--We have "<<Student::getTotal()<<" students--"<<endl;
-}
-//静态函数不依赖任何对象 不能操作非静态变量
+}			//使用静态函数要这样操作 类名::函数名()
+			//静态函数不依赖任何对象 不能操作非静态变量
 ```
 
 # 10.运算符的重载
 ## operators in opencv
-Operators for cv::Mat
-//函数有相同的函数名 但是有不同的变量 有函数重载
+### Operators for cv::Mat
+- 函数有相同的函数名 但是有不同的变量 有函数重载
+- 操作符有类似操作吗？ 有！
 ```cpp
-Mat mul(Mat& A,Mat& B);
-Mat mul(Mat& A,float b);
-Mat mul(float a,Mat& B);
+//function overloading
+Mat add(Mat& A,Mat& B);		//矩阵加法
+Mat add(Mat& A,float b);	//也许可以定义为 bI(单位矩阵)+Matrix
+Mat add(float a,Mat& B);
+
+Mat mul(Mat& A,Mat& B);		//矩阵相乘
+Mat mul(Mat& A,float b);	//矩阵的数乘
+Mat mul(float a,Mat& B);	
 ```
 
 ```cpp
-More convenient to code
+//operator overloading
+//More convenient to code
 Mat A,B;
 float a,b;
 //...
@@ -2069,25 +2111,31 @@ int main()
 		<<C<<endl;//重载
 return 0;
 }
-}
 //output:Matrix C=[9,12
 		  18,24]
 ```
-如何实现呢？？
+
+```text
+- How to fulfill?
 Operator overloading
 Customizes the C++ for operands of user-defined types
 Overload operators are functions with special function names:
-
+```
 ```cpp
 #include<string>
-
-std::string s("Hello");
-s+="C";//overloading
-s.operator+=(" and CPP!")
-//最后两行两个操作等价
+#include<iostream>
+int main(){
+	std::string s("Hello");
+	s+="C";		//overloading
+	s.operator+=(" and CPP!")
+			//两个操作等价
+	std::cout<<s<<std::endl;
+	return 0;
+}	
+	//output: Hello C and CPP!
 ```
 ## Operator overloading //Actually a function
--Implementation of operator+() and operator+=() and operator+=()
+- Implementation of `operator+()` and `operator+=()` 
 ```cpp
 class MyTime
 {
@@ -2103,7 +2151,7 @@ class MyTime
 		}
 		*/
 		MyTime(int h,int m):hours(h),minutes(m){}
-
+		//初始化
 		MyTime operator+(const MyTime & t) const
 		{
 			MyTime sum;
@@ -2112,16 +2160,18 @@ class MyTime
 			sum.hours+=sum.minutes/60;
 			sum.minutes%=60;
 			return sum;
-		}//只修改了sum
-		std::string getTime() const;
+		}//只修改了sum 这里的this指向+前面的变量 like t1+t2 实现两个MyTime 类型的相加
+		std::string getTime() const;//承诺不修改成员变量
+
 };
-//完成了operator+()的重载
+//完成了operator+()的重载 解决了sum=t1+t2的问题
 ```
 
 ### operator+=的重载
 ```cpp
+//解决t1+=t2的问题
 MyTime & operator+=(const MyTime & t)//引用传递
-{//引用返回
+{//返回类型是引用 直接修改并且返回
 	this->minutes+=t.minutes;
 	this->hours+=t.hours;
 
@@ -2133,11 +2183,14 @@ MyTime & operator+=(const MyTime & t)//引用传递
 }//修改自身返回自身
 ```
 
-
+```text
 If one operand is not MyTime, and is an int
 What about MyTime t2=t1+20; ?
-The function can be
+The function can be ...
+```
+
 ```cpp
+//解决类似sum=t1+50的问题 
 MyTime operator+(int m) const
 {
 	MyTime sum;
@@ -2161,29 +2214,27 @@ MyTime operator+(const std::string str) const
 }
 //实现了+"one hour"
 ```
-How about the expression 20+t1; ?
+- How about the expression `20+t1;` ?
 
-## friend Functions
-If we want that operator + can support(int+MyTime)
-MyTime t1(2,40);
-20+t1;
-Using friend functions!!
-Declare in a class body
-Granted class access to members(including private members)
-But not members 不是类的成员
+## friend Functions 友元函数
+- If we want that operator + can support(`int+MyTime`) like `MyTime t1(2,40); 20+t1;`
+- Using friend functions!!
+- Declare in a class body
+- Granted class access to members(including private members)
+- But not members 不是类的成员
 ```cpp
 class MyTime
 {
 	//...
 	public:
-		friend MyTime operator+(int m,const MyTime & t)
+		friend MyTime operator+(int m,const MyTime & t)	//m+t
 		{
 			return t+m;
 		}
 };
 
-A friend function can be defined out of the class
-No MyTime:: before its function name as it is not a member of the class
+//A friend function can be defined out of the class
+//No MyTime:: before its function name as it is not a member of the class
 class MyTime
 {
 	//...
@@ -2195,11 +2246,23 @@ MyTime operator+(int m,const MyTime & t)
 	return t+m;
 }
 
-```cpp
+```
+- 在 C++ 中，+ 是一个二元运算符。当你写 a + b 时，编译器会去寻找一个名为 operator+ 的函数，并把 a 作为第一个实参，b 作为第二个实参传入。
 
--operator << can also be overloaded
-But in(cout << t1;),the first operand is std::ostream,not MyTime
--Use a friend function
+-  对于成员函数（如 MyTime operator+(const MyTime& t)），第一个参数是隐藏的 this 指针。因此 a + b 中的 a 必须是 MyTime 对象（因为 this 必须指向 MyTime），而 b 是括号里的参数。
+
+- 对于友元函数（全局函数），它没有 this 指针。它的两个参数就是左操作数和右操作数。
+
+- friend关键字只是声明 告诉编译器这个函数不是成员 但是允许他访问私有成员变量 在外部定义时 编译器已经知道这个只是个普通的函数 friend是给类看的 
+
+- 但是在类内部必须加friend来定义 因为成员函数的第一个参数必须是this 
+ 
+### Operator<<的重载
+- operator<< can also be overloaded
+- But in(`cout << t1;`),the first operand is std::ostream(cout),not MyTime 也是一个双目运算
+- Don't modify the definition of std::ostream!
+- Use a friend function
+
 ```cpp
 friend std::ostream & operator<<(std::ostream & os, const MyTime & t)
 {
@@ -2207,10 +2270,11 @@ friend std::ostream & operator<<(std::ostream & os, const MyTime & t)
 		+std::to_string(t.minutes)+"minutes.";
 	os<<str;
 	return os;
-
+//return os;确保后续输出<<std::endl;正常进行
 }
 //输出流
 
+### Operator>>的重载
 friend std::istream & operator>>(std::istream & is,MyTime & t)
 {
 	is>>t.hours>>t.minutes;
@@ -2221,7 +2285,7 @@ friend std::istream & operator>>(std::istream & is,MyTime & t)
 }
 //输入流
 ```
-
+- 运算符重载后
 ```cpp
 int main()
 {
@@ -2233,14 +2297,10 @@ int main()
 	std::cin>>t1;
 	std::cout<<t1<<std::endl;
 
-
-
 }
 
 
 ```
-
-return os;确保后续输出<<std::endl;正常进行
 
 ## User-defined Type Conversion
 ### operator type()
@@ -2252,28 +2312,29 @@ operator int() const
 	return this->hours*60+this->minutes;
 }
 //MyTime转换成int
-
+//要放到类里面
 
 //explicit conversion const
 explicit operator float() const
 {
 	return float(this->hours*60+this->minutes);
 }
+//不可进行隐式类型转换
 MyTime t1(1,20);
-int minutes=t1;//implicit conversion
-float f=float(t1);//explicit conversion 
+int minutes=t1;		//implicit conversion
+float f=float(t1);	//explicit conversion 
 //必须进行显式转换
 //防止隐式转化
 ```
 
 ### Converting constructor
 - Convert another type to current
+//整数转成MyTime 借助构造函数
 ```cpp
 MyTime(int m):hours(0),minutes(m)
 {
 	this->hours+=this->minutes/60;
 	this->minutes%=60;
-
 }
 MyTime t2=70;
 //整数转化成MyTime
@@ -2292,7 +2353,7 @@ MyTime & operator=(int m)
 
 MyTime t3;
 t3=80;
-//赋值
+//此处是赋值操作
 Different! 
 
 ```
@@ -2302,6 +2363,7 @@ Different!
 - Two operators:prefix increment & postfix increment
 ```
 //prefix increment
+//++m;
 MyTime & operator++()
 {
 	this->minutes++;
@@ -2310,26 +2372,30 @@ MyTime & operator++()
 	return *this;
 }
 //postfix increment
-MyTime operator++(int)
+//m++;
+MyTime operator++(int)		//表示编译器读取到的第一个数据是int
 {
-	MyTime old=*this;//keep the old value
-	operatir++();//prefix increment
-	return old;//返回之前的值
+	MyTime old=*this;	//keep the old value
+	operatir++();		//prefix increment
+	return old;		//返回之前的值
 }
 int main(){
 	MyTime t1(1,59);
 	MyTime t2=t1++;
 	MyTime t3=++t1;
 }
-
+//operator--同理
 ```
-Many operators can be overloaded
 
+- Many operators can be overloaded
 
-# Some Default Operations 
+# 11.
+## Some Default Operations 
 //默认操作
-- Default constructor: a constructor which can be called without arguments
+### Default constructor: a constructor which can be called without arguments
+- parameter形参 函数定义时括号内的占位符    argument实参 调用函数时实际传入的具体值
 - If you define no constructors, the compiler automatically provide one
+
 ```cpp
 	MyTime::MyTime(){}
 ```
@@ -2340,27 +2406,28 @@ class MyTime
 	Public:
 		MyTime(int n){...}
 };
-MyTime mt;//no appropriate constructor 出错
+MyTime mt;	//no appropriate constructor 出错
 ```
+
 - To avoid ambiguous
 ```cpp
 class MyTime
 {
-	public://two default constructors
+	public:		//two default constructors
 		Mytime(){...}
 		MyTime(int n=0){...}
 };
 MyTime mt;//which constructor?
 //编译器不知道调用哪个
+//DON'T DO THAT
 ```
 
-Implicitly-defined Destructor
+### Implicitly-defined Destructor
 - If no destructor is defined, the compiler will generate an empty one
-```cpp
+```
 MyTime::~MyTime(){}
 //编译器自动生成 不会帮助释放资源
--Memory allocated in constructors is normally released in a destructor
-智能指针
+//Memory allocated in constructors is normally released in a destructor
 ```
 
 ### Default Copy Constructors
@@ -2369,27 +2436,33 @@ MyTime::~MyTime(){}
 MyTime::MyTime(MyTime & t){...}
 
 MyTime t1(1,59);
-MyTime t2(t1);//copy constructor
-MyTime t3=t1;//copy constructor
-等价写法
-
-Default copy constructor:
+MyTime t2(t1);	//copy constructor
+MyTime t3=t1;	//copy constructor
+//等价写法
+```
+- Default copy constructor:
 - If no user-defined copy constructors, the compiler will generate one.
 - Copy all non-static data members.
+- 拷贝所有非静态成员
+
 
 ### Default Copy Assignment
 - Assignment oeprators: =,+=,-=...
 - Copy assignment operator
-	Mytime & MyTime::operator=(MyTime & ){...}
+```cpp
+Mytime & MyTime::operator=(MyTime & ){...}
 MyTime t1(1,59);
-MyTime t2=t1;//copy constructor
-t2=t1;//copy assignment 使用等号重载
+MyTime t2=t1;	//copy constructor
+t2=t1;		//copy assignment 使用等号重载
+```
 - Default copy assignment operator
-	If no user-defined copy assignment constructors, the compiler will generate one
-	Copy all non-static data members
+- If no user-defined copy assignment constructors, the compiler will generate one
+- Copy all non-static data members
+- 这些默认操作可能会埋下隐患
 
 ## An Example with Dynamic Memory
-//指针和内存管理
+- 指针和内存管理
+### A simple String Class
 ```cpp
 class MyString
 {	
@@ -2850,7 +2923,7 @@ struct Node {
 
 
 
-
+# STL标准模板库
 //stl篇stl是Standard Template Library标准模板库 是C++标准库的核心组成部分
 //本质上是一套数据结构与算法的工具箱
 //vector 动态大小 可以随意增删元素的数组替代品 向量
