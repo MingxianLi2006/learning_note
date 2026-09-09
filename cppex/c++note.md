@@ -2450,7 +2450,7 @@ MyTime t3=t1;	//copy constructor
 - Assignment oeprators: =,+=,-=...
 - Copy assignment operator
 ```cpp
-Mytime & MyTime::operator=(MyTime & ){...}
+Mytime & MyTime::operator=(const MyTime& other ){//... return *this;}
 MyTime t1(1,59);
 MyTime t2=t1;	//copy constructor
 t2=t1;		//copy assignment 使用等号重载
@@ -2507,21 +2507,38 @@ int main()
 	MyString str1(10,"Shenzhen"):	//MyString str1创建第一个对象 值针指向S
 	cout<<"str1: "<<str1<<endl;
 
-	MyString str2=str1;		//调用了copy constructor 但是他没有另外定义！只是调用了系统默认的copy函数
+	MyString str2=str1;		//调用了default copy constructor 但是他没有另外定义！只是调用了系统默认的copy函数
 	cout<<"str2: "<<str2<<endl;	//调用了默认构造函数str2也指向了S
 
 
 	MyString str3;			//申请64字节 创建了第三个对象
 	cout<<"str3: "<<str3<<endl;
 	str3=str1;			//赋值操作 默认把str1对象的成员拷贝给str1 指向第一块内存			
-	cout<<"str3: "<<str3<<endl;
+	cout<<"str3: "<<str3<<endl;	//调用了default copy assignment
 }
 //系统报错了！	
 //同一块内存被多次释放了！ 
 //另外MyString str3的时候申请了64个字节 但是str3又指向了str1 这块申请的内存没有指针指向了 会造成内存泄漏
 
 ```
-### 初始化和赋值操作的区别
+#### 各种构造函数
+```cpp
+class MyTime {
+public:
+    // ✅ 默认构造函数（无参）
+    MyTime() : hours(0), minutes(0) {}
+    
+    // ✅ 带参数的构造函数
+    MyTime(int h, int m) : hours(h), minutes(m) {}
+    
+    // ✅ 拷贝构造函数（Copy Constructor）
+    MyTime(const MyTime& other) : hours(other.hours), minutes(other.minutes) {}
+    
+private:
+    int hours, minutes;
+};
+```
+#### 初始化和赋值操作的区别
 1. 发生时机不同 初始化发生在变量首次获得内存那一刻 赋值发生在变量已经存在之后
 2. 内存处理不同 初始化内存是干净的 直接在该内存上构建对象  赋值是内存已经存有旧数据 赋值操作先处理旧数据（对于类类型，可能需要先释放旧资源，再拷贝新资源）
 3. 对const 和&不同
@@ -2530,8 +2547,9 @@ int main()
 - 问题如何解决？
 ### Solution1: Hard Copy
 - Provide a user-defined copy constructor 使用一个自定义的拷贝构造函数 
-- 让所有对象都拥有自己的内存
+- 由于问题出在多个对象指向同一块内存 所以我们让所有对象都拥有自己的内存
 ```cpp
+//overload copy constructor
 MyString::MyString(const MyString & ms)
 {
 	this->buf_len=0;
@@ -2541,8 +2559,37 @@ MyString::MyString(const MyString & ms)
 }
 ```
 - create() release the current memory and allocate a new one
+```cpp
+//类内部
+bool create(int buf_len,const char* data)
+{
+	release();		//先释放旧资源
+	this->buf_len=buf_len;
+	if (this->buf_len!=0)
+	{
+		this->characters=new char[this->buf_len]{};
+	}
+	if(data)
+		strncpy(this->characters,data,this->buf_len);
+	return true;
+}
+bool release()
+{
+	this->buf_len=0;
+	if(this->characters!=NULL)
+	{
+		delete[] this->characters;
+		this->characters=NULL;
+	}
+	return 0;
+}
+
+//对象可能被反复使用 所以需要release
+//先释放原来的资源再 create
+```
 - this->characters will not point to ms.characters
 - It's hard copy!
+
 ```cpp
 //构造函数的重载
 class MyString {
@@ -2560,7 +2607,7 @@ public:
     MyString(const MyString & ms);
 };
 ```
-// 这个是构造函数的重载
+
 ```cpp
 // 拷贝构造函数的调用场景
 MyString str1(10,"Shenzhen");
@@ -2592,13 +2639,13 @@ bool create(int buf_len,const char * data)
 }
 
 ```
-
+//重新申请内存 重新copy
 
 ## Solution2 soft copy
-Problem of Hard Copy
-- Frequently allocate and free
-- Time consuming when memory is big
-
+- Problem of Hard Copy
+1. Frequently allocate and free
+2. Time consuming when memory is big
+- If several objects share the same memory, who to release them?
 ### CvMat Struct
 ```cpp
 typedef struct CvMat
@@ -2621,12 +2668,12 @@ typedef struct CvMat
 
 
 }
-//多申请四块内存 refcount+1 -1引用记数
+//多申请四个字节 refcount+1 -1引用记数
 ```
-### Solution in OpenCV
-- The allocated memory can 
+//后续发展为cv::Mat class
 
-看不懂
+
+### Solution in OpenCV
 AI
 好的，我们只聚焦于 **C++ 中 OpenCV 的浅拷贝（Soft Copy）是如何实现的**。
 
@@ -2764,25 +2811,74 @@ B.at<uchar>(0,0) = 255; // 修改 B 的第一个像素
 
 > **只复制了 `cv::Mat` 对象的栈上内存（矩阵头），让多个对象共享同一个堆上的像素数据块，并通过引用计数器（`refcount`）管理该数据块的生命周期。**
 
-# Smart Pointers
+## Smart Pointers
 - 只申请 不释放
+### std::shared_ptr
 - Smart Pointers are used to make sure that an object can be deleted when it is no longer used.
 - Several shared pointers can share/point to the same object
 - The object is destroyed when no share_ptr points to it.
 ```cpp
 std::shared_ptr<MyTime> mt1(new MyTime(10));
-std::shared_ptr<MyTime> mt2=mt1;
+std::shared_ptr<MyTime> mt2=mt1;		//类似vector的定义方式
 //指向同一个对象
 
 auto mt1=std::make_shared<MyTime>(1,70);
 //两种创建智能指针的方式
 ```
+
+```cpp
+//智能指针不能赋给一个普通的指针
+std::shared_ptr<MyTime> mt0=new MyTime(0,70);	//error
+MyTime * mt1=std::make_shared<MyTime>(1,70);	//error
+
+std::shared_ptr<MyTime> mt1(new MyTime(10));	//完成了申请内存并初始化为10min
+std::shared_ptr<MyTime> mt2=mt1;
+std::shared_ptr<MyTime> mt3=mt2;
+
+std::cout<<"mt1"<<*mt1<<std::endl;
+std::cout<<"use_count()= "<<mt2.use.count()<<std::endl;	//输出智能指针持有的对象被多少个对象指向
+auto mt4=mt3;
+*mt4=*mt4+50;	//触发constructor
+//程序结束是destructor触发
+```
+### std::unique_ptr
+```text
+- Different from std::shared_ptr, a std::unique_ptr will point an object, and not allow others to point to
+- But an object pointed by a std::unique_ptr can be moved to another pointer
+//所有权转给另一个ptr
+```
+
+```cpp
+std::unique_ptr<MyTime> mt1(new MyTime(10));
+std::unique_ptr<MyTime> mt2=std::make_unique<MyTime>(80);
+
+std::unique_ptr<MyTime> mt3=std::move(mt1);	//只有mt3指向
+std::shared_ptr<MyTime> mt4=std::move(mt3);	//也可以
+```
+
+#### How to understand smart pointers
+definition:  
+```cpp
+template<class T> class shared_ptr;
+template<classT, 
+class Deleter=std::default_delete<T> 
+>class unique_ptr;
+```
+- mt1 and mt2 are two objects of type shared_ptr<>	//mt1 mt2是类对象
+- we can do a lot in the constructors and the destructor
+```
+std::shared_ptr<MyTime> mt1(new MyTime(10));
+std::shared_ptr<MyTime> mt2=mt1;	//可能会有opencv的refcount
+```
+
+```text
+AI said  
 我们接着刚才 OpenCV 的引用计数，来系统地讲一下 **C++ 智能指针（Smart Pointer）**。
 
 其实 OpenCV 的 `cv::Mat` 内部用的“引用计数”机制，和 C++ 智能指针的核心思想**一模一样**：**自动管理堆内存，让程序员不用手动 `new` 和 `delete`**。
 
 智能指针是 C++ 标准库（`<memory>`）提供的一个强大工具，用于解决内存泄漏、悬垂指针等问题。
-
+```
 ---
 
 ### 一、为什么需要智能指针？
@@ -2917,18 +3013,106 @@ struct Node {
 
 看不懂
 
-# 12
+
+
+# 12.
 ## Improve your source code
+```text
+Project3: use C to 
+- create a matrix
+- delete a matrix
+- copy a matrix
+- multiply two matrices
+- some other function
+```
+### suggestions
+- use size_t for mat.cols and mat.rows
+- use memcpy() to copy data. Element assignment has a lower efficiency
+```
+// 使用一维数组存储矩阵（连续内存）
+class Matrix {
+private:
+    int* data;
+    int rows, cols;
+    
+public:
+    Matrix(int r, int c) : rows(r), cols(c) {
+        data = new int[rows * cols];  // 连续内存！
+    }
+    
+    // 高效复制
+    void copy_from(const Matrix& other) {
+        // 一次性复制所有数据
+        memcpy(this->data, other.data, rows * cols * sizeof(int));	
+	//void* memcpy(void* dest,const void* src, size_t count);
+        // 或者使用 std::copy（类似效率）
+        // std::copy(other.data, other.data + rows*cols, this->data);
+    }
+    
+    // 元素访问（行主序）
+    int& at(int row, int col) {
+        return data[row * cols + col];
+    }
+};
+
+// 使用
+Matrix m1(1000, 1000), m2(1000, 1000);
+m2.copy_from(m1);  // 一次 memcpy 搞定！
+```
+- Use 1D array(float*) nor 2D array(float**) for matrix data
+- Redundant computation in loops
+- Do parameter checking in functions: null pointers,dimension matching in matrix operations,etc
+- Do not bind the create matrix function with file I/O
+- DON'T use unclear source code name
+- Good implementation!不断提升代码质量
+
+## Derived class
+### Inheritance
+- inherit members(attributes and functions) from one class
+- Base class(parent)
+- Derived class(chile)
+
+```cpp
+class Base
+{
+	public:
+		int a;
+		int b;
+};
+class Derived: public Base
+{
+	public:
+		int c;
+};
+
+//可以进行多个继承
+class Derived: public Base,public Base2
+{
+	...
+};
 
 
+//多个父类
+```
 
+### Constructors
+- To instantiate a derived class object
+- Allocate memory
+- Derived constructor is invoked
+//先父后子
+### Destructor
+//先子后父 
 
 # STL标准模板库
-//stl篇stl是Standard Template Library标准模板库 是C++标准库的核心组成部分
-//本质上是一套数据结构与算法的工具箱
-//vector 动态大小 可以随意增删元素的数组替代品 向量
-//在<vector>里面 
-//vector <int> v; 空数组
+- stl是Standard Template Library标准模板库 是C++标准库的核心组成部分
+- 本质上是一套数据结构与算法的工具箱
+- 分为algorithm 算法 container 容器 iterator 迭代器
+## vector
+- vector 动态大小 可以随意增删元素的数组替代品 向量
+`vector <int> v;` 空数组
+
+
+```cpp
 #include<vector>
 #include<iostream>
 using namespace std;
