@@ -1,0 +1,11 @@
+a=[1,2];
+b=[3,4];
+c=a*b'
+d=a'*b
+magic(4)
+ones(2,3)
+e=eye(5)
+e+2
+f=diag(a)
+f*f'
+f.*f
