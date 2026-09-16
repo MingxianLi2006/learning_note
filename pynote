@@ -870,3 +870,8 @@ if __name__=='__main__':
 		fun1()
 	except Exception as e:
 		print("运行出错了请联系管理员")
+
+
+IO编程
+
+AI应用
