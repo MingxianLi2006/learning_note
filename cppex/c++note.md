@@ -2361,7 +2361,7 @@ Different!
 ## Increment and decrement operator
 ### Increment
 - Two operators:prefix increment & postfix increment
-```
+```cpp
 //prefix increment
 //++m;
 MyTime & operator++()

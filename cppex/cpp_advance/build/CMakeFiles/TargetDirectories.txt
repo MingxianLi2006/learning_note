@@ -1,0 +1,3 @@
+/home/sleepysloth/note/learning_note/cppex/cpp_advance/build/CMakeFiles/demo.dir
+/home/sleepysloth/note/learning_note/cppex/cpp_advance/build/CMakeFiles/edit_cache.dir
+/home/sleepysloth/note/learning_note/cppex/cpp_advance/build/CMakeFiles/rebuild_cache.dir
