@@ -3247,20 +3247,166 @@ class Derived:public Base
 
 
 ## Virtual functions
+Example
+```cpp
+class Person
+{
+	...
+	public:
+		void print()
+		{
+			cout<<"Name: "<<name<<endl;
+		}
+};
+class Student: public Person
+{
+	void print()
+	{
+		cout<<"Name: "<<name;
+		cout<<". ID: "<<id<<endl;
+	}
+};
+void printObjectInfo(Person & p)	//引用的是Person类
+{
+	p.print();
+}
+//会调用哪一个print函数？
+int main()
+{
+	{
+		Student stu("yu","2019");
+		printObjecInfo(stu);
+	}
 
+	{
+		Person * p=new Student("xue","2020");
+		p->print();	//if print() is not a virtual function, differnent output
+		delete p;	//if its destructor is not virtual
+	}
 
+}
+//只打印了名字 没有打印id 说明调用的都是父类函数
+//如何实现调用子类的print?
+//只需要在父类的成员函数前面加上virtual
+//virtual void print()
 
+//如果是直接构造一个Student 并且调用print会调用子类中的print 
+//另外 子类的构造需要有父类的无参数构造函数 不然无法编译
 
+```text
+If we define print() function as a virtual function, the output will be different
+Static bonding: the compiler decides which function to call	静态绑定
+Dynamic binding: the called function is decided at runtime	动态绑定
+当一个函数被定义为虚函数时 会采用动态绑定
 
+Keyword virtual makes the function virtual for the base and all derived classes
 
+```
+```cpp
+Person *p=&yu;
+p->print();
+//当父类中的print()为virtual时 会采用动态绑定 调用子类中的print() 否则是静态绑定 调用父类中的print()
 
+//并且子类中同名 参数列表相同的函数也会自动变成virtual
+```
 
+```cpp
+class Person2
+{
+	public:
+		string name;
+		Person2(string n):name(n){}
+		virtual void print()=0;		//纯虚函数
 
+}；
+```
+```text
+析构函数一定是虚函数
+If a virtual destructor is not virtual, only the destructor of the base class is executed in some examples
+```
+```cpp
+Person * p=new Student("xue",2020);
+p->print();
+delete p; //只调用父类的析构函数
 
+```
 
+## Inheritance and Dynamic Memory Allocation
+- If a base class uses dynamic memory allocation, and redefines a copy constructor and assignment operator
 
+- Case1: If no dynamic memory allocation in the derived class, no special operations are needed
 
+- Case2: If dynamic memory is allocated in the derived class, you should redefine a copy constructor and an assignment operator
 
+```cpp
+psudocode
+
+class MyMap:public MyString
+{
+	char * keyname;
+	public:
+		MyMap(const char * key,const char * value)
+		{
+			...
+		}
+		MyMap(const MyMap & mm):MyString(mm.buf_len,mm,characters) //使用父类的构造函数来申请内存
+		{
+			//allocate memory for keyname
+			//and hard copy from mm to *this
+		}
+		MyMap & operator=(const MyMap &mm)
+		{
+			//需要对mm进行强制转换
+			MyString::operator=(mm);
+			//allocate memory for keyname
+			//and hard copy from mm to *this
+			return *this;
+		}
+
+}
+
+```
+
+## Examples in OpenCV
+template<typename _Tp> class Mat_:public Mat
+{
+	public:
+		typedef _Tp value_type;
+		typedef typename DataType<_Tp>::channel_type channel_type;
+		typedef MatIterator_<_Tp> iterator;
+		typedef MatConstIterator_<_Tp> const_ierator;
+
+		//! default constructor
+		Mat_() CV_NOEXPECT;
+		//! equvalent to Mat(_rows,cols,DataType<_Tp>::type)
+		Mat_(int _rows,int _cols,const _Tp& value);
+		//! equvalent to Mat(_size,DataType<_Tp>::type)
+		explicit Mat_(Size _size);
+		//! constructor that sets each matrix element to specified value
+		Mat_(Size _size,const _Tp& value);
+};
+
+- cv::Matx
+A template class for small matrices whose type and size are known at complilation time
+`template<typename _Tp,int m,int n> class Matx`
+
+- cv::Vec
+```cpp
+template<typename _Tp,int cn> class Vec:public Matx<_Tp,cn,1>
+Vec<float,3> xyz(1.2f,2.3f,3.4f);
+
+typedef Vec<float,3> Vec3f; //重命名以简化代码
+Vec3f xyz(1.2f,2.3f,3.4f);
+```
+
+```cpp
+Mat33f m(1,2,3,4,5,6,7,8,9);
+cout<<sum(Mat(m*m.t()))<<endl;
+//m.t()为矩阵的转置
+```
+
+# 13
+### Class Templates
 
 
 
