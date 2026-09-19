@@ -3073,7 +3073,7 @@ m2.copy_from(m1);  // 一次 memcpy 搞定！
 - Derived class(chile)
 
 ```cpp
-class Base
+class Base	//parent
 {
 	public:
 		int a;
@@ -3083,25 +3083,203 @@ class Derived: public Base
 {
 	public:
 		int c;
-};
+};	//已经包含a b
 
 //可以进行多个继承
-class Derived: public Base,public Base2
-{
+class Derived: public Base1,public Base2
+{		//Base1 Base2是代指 public是继承方式 父类的public成员在子类中仍是public 
+		//protected仍是protected 但是private不可见
 	...
 };
-
-
 //多个父类
 ```
 
 ### Constructors
 - To instantiate a derived class object
-- Allocate memory
-- Derived constructor is invoked
+1. Allocate memory
+2. Derived constructor is invoked
+```text
+Base object is constructed by a base constructor
+Member initializer list initializes members
+To execute the body of the derived constructor
+
 //先父后子
+```
 ### Destructor
-//先子后父 
+```text
+先子后父 
+```
+```cpp
+using namespace std;
+class Base
+{
+	public:
+		int a;
+		int b;
+		Base(int a=0,int b=0)
+		{
+			this->a=a;
+			this->b=b;
+			cout<<"Constructor Base::Base("<<a<<","<<b<<")"<<endl;
+		}
+		~Base()
+		{
+			cout<<"Destructor Base::~Base()"<<endl;
+		}
+		
+		int product()
+		{
+			return a*b;
+		}
+		friend std::ostream & operator<<(std::ostream & os, const Base & obj)
+		{
+			os<<"Base: a="<<obj.a<<",b"<<obj.b;
+			return os;
+		}
+}
+class Derived:public Base
+{
+	public:
+		int c;
+		Derived(int c):Base(c-2,c-1),c(c)	//初始化列表
+		{
+			this->a+=3;	//it can be changed after initialization
+			cout<<"Constructor Derived::Derived("<<c<<")"<<endl;
+		}
+		~Derived()
+		{
+			cout<<"Destructor Derived::~Derived()"<<endl;
+		}
+		int product()
+		{
+			return Base::product() * c;
+		}
+		friend std::ostream & operator<<(std::ostream & os, const Derived & obj)
+		{
+			//call the friend function in Base class
+			os<<static_cast<const Base&>(obj)<<endl;
+
+			os<<"Derived: c"<<obj.c;
+			return os;
+		}
+
+};
+int main()
+{	
+	{
+		Base base(1,2);
+		cout<<base<<endl;
+	}
+	cout<<"---------------------------"<<endl;
+	{
+		Derived derived(5);
+		cout<<derived<<endl;
+		cout<<"Product="<<derived.product()<<endl;
+	}
+
+	return 0;
+}
+```
+## Access Control
+### Member Access
+- public members
+accessible anywhere
+- private members
+only accessible to the memebers and friend of that class
+
+```cpp
+class Person
+{
+	private:
+		int n;//private member
+	public:
+		//this->n is accessible
+		Person():n(10){}
+		//other.n is accessible
+		Person(const Person& other):n(other.n){}
+		//this->n is accessible
+		void set(int n){this->n=n;}
+		//this->n and other.n are accessible
+		void set(const Person& other){this->n=other.n;}
+
+};
+```
+- Protected members
+Accessible to the members and friends of that class
+Accessible to the members and friends of the derived class
+```cpp
+class Base
+{
+	protected:
+		int n;
+	private:
+		void foo1(Base& b)
+		{
+			n++;//okay
+			b.n++//Okay
+		}
+};
+
+class Derived:public Base
+{
+	...
+	void foo2(Base &b,Derived& d)
+	{
+		n++;//Okay
+		this->n++;//Okay
+		//b.n++;//Error
+		d.n++;//Okay
+	}
+};
+//子类的成员函数只能通过子类自己的对象访问父类protected成员 不能通过父类对象访问
+```
+
+### 继承方式
+#### Public Inheritance
+- Public members of the base class
+1. still be public in the derived class
+2. Accessible anywhere
+- Protected members of the base class
+1. still be protected in the derived class
+2. Accessible in the derived class only
+- Private
+1. Not accessible in the derived class
+
+
+## Virtual functions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # STL标准模板库
 - stl是Standard Template Library标准模板库 是C++标准库的核心组成部分
