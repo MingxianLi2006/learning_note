@@ -3406,7 +3406,327 @@ cout<<sum(Mat(m*m.t()))<<endl;
 ```
 
 # 13
-### Class Templates
+## Class Templates
+### Review: Function Templates
+- A function template is note a type, or a function, or any other entity
+- No code is generated from a source file that contains only template definitions
+- Template arguments must be determined 
+
+- Function templates VS Template functions
+1.Function templates
+```cpp
+template<typename T>
+T sum(T x,T y)
+{
+	cout<<"The input type is "<<typeid(T).name<<endl;
+	return x+y;
+}
+//instantiates 
+template double sum<double>(double,double);
+template char sum<char>(char,char)
+显式实例化
+//实例化后生成的函数叫做模板函数
+```
+
+### Different Classes for Different Type Matrices
+```cpp
+class IntMat
+{
+	size_t rows;
+	size_t cols;
+	int * data;
+	//public:之前的变量默认为private
+	public:
+		IntMat(size_t rows,size_t cols):rows(rows),cols(cols)
+		{
+			data=new int[rows * cols *sizeof(int)]{}
+		}
+		~InMat()
+		{
+			delete [] data;
+		}
+		InMat(const IntMat&)=delete;
+		//删除函数 明确告诉编译器禁止生成/使用这个函数 C++11
+		//防止编译器生成默认的拷贝构造函数
+		IntMat& operator=(const IntMat&)=delete;
+		int getElement(size_t r,size_t c);
+		bool setElement(size_t r,size_t c,int value);
+	
+};
+int IntMat::getElement(size_t r,size_t c)
+{
+	if(r>=this->rows || c>=this->cols)
+	{
+		cerr<<"Indices are out of range"<<endl;
+		return 0;
+	}
+	return data[this->cols*r+c];
+}
+
+bool IntMat::setElement(size_t r,size_t c,int value)
+{
+	if(r>=this->rows || c>=this->cols)
+		return false;
+	data[this->cols*r+c]=value;
+	return true;
+}
+
+//Matrix with int elements
+
+
+class FloatMat
+{
+	size_t rows;
+	size_cols;
+	float * data;
+...
+}
+//Matrix with float elements
+
+```
+
+- 复制再修改过于麻烦 且容易出错
+- A class template defines a family of classes
+```cpp
+template<typename T>
+class Mat
+{
+	size_t rows;
+	size_t cols;
+	T * data;
+
+	public:
+		Mat(size_t rows,size_t cols):rows(rows),cols(cols)
+		{
+			data=new T[rows * cols *sizeof(T)]{};
+		}
+		~Mat()
+		{
+			delete [] data;
+		}
+		T getElement(size_t r,size_t c);
+		bool setElement(size_t r,size_t c,T value)
+}
+
+//Explicitly instantiate
+template class Mat<int>;
+int main()
+{
+	Mat<int> imat(3,4);
+	imat.setElement(1,2,256);
+	Mat<float> fmat(2,3);
+	fmat.setElement(1,2,3.14159f)
+	Mat<double> dmat(2,3,2.7456789);
+}
+```
+
+## Template None-Type Parameters
+- To declare a template
+`template <parameter-list> declaration`
+- The parameters can be
+1. type template parameters
+2. template template parameters
+3. non-type template parameters //参数是一个具体的值 不是一个类型
+```cpp
+vector<int> vec1;
+vector<int,16> vec2;
+```
+- If we want to create a static matrix(no dynamic memory allocation inside)
+
+```cpp
+template<typename T,size_t rows,size_t cols>	//几行几列 挪到定义
+class Mat
+{
+	T data[rows][cols];
+	public:
+		Mat(){}
+		T getElement(size_t r,size_t c);
+		bool setElement(size_t r, size_t c,T value);
+};
+template<typename T,size_t rows,size_t cols>	//类外定义必写
+T Mat<T,rows,cols>::getElement(size_t r,size_t c)
+{
+	if(r>=rows || c>=cols)
+	{
+		cerr<<"getElement(): indices are out of range"<<endl;
+		return 0;
+	}
+	return data[r][c];
+}
+template<typename T,size_t rows,size_t cols>
+bool Mat<T,rows,cols>::setElement(size_t r,size_t c,T value)
+{
+	if(r>=rows || c>=cols)	//rows在这不再是成员变量
+	{
+		cerr<<"setElement(): Indices are out of range"<<endl;
+		return false;
+	}
+	data[r][c]=value;
+	return true;
+}
+
+
+template class Mat<int,2,2>;	//Explicitly instantiate template
+Mat<int,2,2>
+typedef Mat<int,2,2> Mat22i;	//起别名
+int main()
+{
+	Mat22i mat;
+
+	mat.setElement(2,3,256);
+	cout<<mat.getElement(2,3)<<endl;
+
+	mat.setElement(1,1,256);
+	cout<<mat.getElement(1,1)<<endl;
+
+	Mat<float,3,1> vec;
+	vec.setElement(2,0,3.14156f);
+	cout<<vec.getElement(2,0)<<endl;
+
+	Mat<float,3,1> vec2(vec);	//use copy constructor
+	cout<<vec2.getElement(2,0)<<endl;
+
+	vec2=mat;//error 类型不匹配
+}
+```
+
+#### Template in OpenCV
+```cpp
+template<typename _Tp,int m,int n> class Matx
+{
+	public:
+		enum{
+			rows=m,
+			cols=n,
+			channels=rows*cols,
+	#ifdef OPENCV_TREAITS_ENABLE_DEPRECATED
+			depth=traits::Type<_Tp>::value,
+			type=CV_MAKETYPE(depth,channels),
+	#endif
+			shortdim=(m<n?m:n)
+			};
+	...
+};
+typedef Matx<float,1,2> Matx12f;
+typedef Matx<double,1,2> Matx12d;
+typedef Matx<float,1,3> Matx13f;
+...
+```
+## Class template specialization
+- The class template can be for most types
+- But we want to save memory for type `bool`(1 byte or 1 bit)
+```cpp
+template <typename T>
+class MyVector<bool>	//对bool进行了特例化
+{			//Specialize MyVector for bool
+	size_t length;
+	T * data;
+	public:
+		MyVector(size_t length):length(length)
+		{
+			data=new T[length * sizeof(T)]{};	
+		}
+		~MyVector()
+		{
+			delete [] data;
+		}
+		MyVector(const MyVector&)=delete;
+		T getElement(size_t index);
+		bool setElement(size_t index, T value);
+
+};
+
+bool MyVector<bool>::getElement(size_t index)
+{
+	if(index>=this->length)
+	{
+		cerr<<"getElement(): Indices are out of range"<<endl;
+		return 0;
+	}
+
+	size_t byte_id=index/8;
+	size_t bit_id=index%8;
+	unsigned char mask=(1<<bit_id);		//1往左移动bit_id位
+	return bool(data[byte_id] & mask);
+}
+bool MyVector<bool>::setElement(size_t index,bool value)
+{
+	if(index>=this->length)
+	{
+		cerr<<"setElement(): Indices are out of range"<<endl;
+		return false;
+	}
+	size_t byte_id=index/8;
+	size_t bit_id=index%8;
+	unsigned char mask=(1<<bit_id);
+
+	if(value)
+		data[byte_id] |= mask;	//把bit_id 位置1
+	else
+		data[byte_id] &= ~mask;	//把bit_id 位清0
+
+	return true;
+
+}
+
+int main()
+{
+	MyVector<bool> boolvec(17);
+	boolvec.setElement(15,false);
+	boolvec.setElement(16,true);
+
+	cout<<boolvec.getElement(15)<<endl;
+	cout<<boolvec.getElement(16)<<endl;
+
+	return 0;
+}
+
+```
+
+## std classes	//C++标准类库里的类
+- Store and manipulate sequences of char-like objects
+
+### std::basic_string
+```text	
+Type			Definition
+std::string//模板类	std::basic_string<char>	//类模板
+std::wstring		std::basic_string<wchar_t>
+std::u8string(C++20)	std::basic_string<char8_t>
+std::u16string(C++11)	std::basic_string<char16_t>
+...
+std::string 本质上是 using std::string=std::basic_string<char>;
+或者 typedef basic_string<cahr> string
+```
+### std::array
+- a container that encapsulates fixed size arrays
+```cpp
+templat<class T,std::size_t N>
+struct array;	//定义一个叫array的结构体模板
+std::array<int,3>a2={1,2,3};
+
+### Some other templates
+```cpp
+template<class T,class Allocator=std::allocator<T>>
+class vector;
+
+
+template<class T,class Allocator=std::allocator<T>>                                            
+class list;
+
+templat<class Key,class Compare=std::less<Key>,class Allocator=std::allocator<Key>>
+class set
+
+template<class Key,class T,class Compare=std::less<Key>,class Allocator=std::allocator<std::pair<const Key,T>>>
+class map;
+
+template<class T,class Container=std::deque<T>>
+class stack;
+
+
+```
+
+# 14
+## Standard Output Stream and Standard Error Stream
 
 
 
