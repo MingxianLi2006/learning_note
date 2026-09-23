@@ -3728,13 +3728,97 @@ class stack;
 # 14
 ## Standard Output Stream and Standard Error Stream
 
+### stdin,stdout,stderr
+- In C, three text streams are predefined, and their type is (FILE *)
+- stdin: standard input stream
+- stdout: standard output stream, for conventional output
+- stderr: standard error stream, for diagnostic output
+### Command-line Interface
+- We used them in the past time and we still need them
+- Many computers still have no GUI: severs, intelligent devices
+- Many programs do not provide GUI: HTTP servers, DB servers
 
+- Output Stream and Error Stream
+- Send contents into streams in C and C++
 
+```c
+fprintf(stdout,"Info: ...\n",...);
+printf("Info: ... \n",...);
 
+fprintf(stderr, "Error: ...\n",...);
+```
 
+```cpp
+std::cout<<"Info: ..."<<std::endl;
+std::cerr<<"Error: ..."<<std::endl;
+```
+- 为什么要区分std::cout 和 std::cerr?
 
+```cpp
+void div(int n)
+{
+	if(n%2!=0)
+	{
+		stdLLcerr<<"Error: The input must be an even number. Here it is"<<n<<"."<<std::endl;
+	}
+	else
+	{
+		int result=n/2;
+		std::cout<<"Info: The result is "<<result<<"."<<std::endl;
+	}
 
+	return;
+}
+int main()
+{
+	for(int n=5;n<=5;n++)
+		div2(n);
+	return 0;
+}
 
+```
+- Info 和 Error都被输出 为什么要区分呢？
+### Redirection(| >> <<)
+- The output of a program is in a pipeline
+- The output can be redirected. You can redirect the output into a file for debugging especially when the program run a very long time
+```bash
+./program | less	//文本文件的查看器
+			//eg. less stderr.cpp
+			//标准错误不会进入less 标准输出会进入less
+			//管道|默认只捕获stdout
+ ./program > output.log	//覆写 overwrite
+./program 1>output.log	//处理标准输出流
+./program >> output.log	//追加append
+./program > /dev/null	//不想保留输出
+
+```
+
+```bash
+./program 2>error.log			//输入标准错误流
+./program > output.log 2>error.log	//第一个放标准输出 第二个放标准错误
+./program &>all.log			//都放到all里面
+./program >all.log 2>&1			//与上面等价	2>&1 stderr指向stdout当前位置
+```
+···bash
+cat error.log
+//获取error.log
+```
+
+## assert
+- assert 是用来做运行时断言的宏 在调试阶段检查某个条件是否成立 不成立就立刻中断程序并报错
+- assert is a function-like macro in <asset.h> and <cassert>
+```cpp
+#ifdef NDEBUG
+#define assert(condition) ((void)0)
+#else
+#define assert(condition) /*implementation defined*/
+#endif
+```
+- Do nothing if the condition is true
+- Output diagnostic information and call abort() if the condition is false
+- If NDEBUG is defined, do nothing whatever the condition is
+- assert can be used only for debugging, be removed by a macro NDEBUG before releasing
+ 
 
 
 
