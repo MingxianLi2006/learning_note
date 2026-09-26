@@ -184,6 +184,7 @@ cd awesome-project
 
 ```bash
 git remote add upstream git@github.com:老板/awesome-project.git
+git remote -v //确认origin 和 upstream 都正确
 ```
 
 验证：

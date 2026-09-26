@@ -3317,8 +3317,8 @@ class Person2
 		string name;
 		Person2(string n):name(n){}
 		virtual void print()=0;		//纯虚函数
-
-}；
+						//只在父类声明 但是无法直接调用 提供接口
+}；				
 ```
 ```text
 析构函数一定是虚函数
@@ -3835,6 +3835,10 @@ cat error.log
 - stl是Standard Template Library标准模板库 是C++标准库的核心组成部分
 - 本质上是一套数据结构与算法的工具箱
 - 分为algorithm 算法 container 容器 iterator 迭代器
+- 迭代器统一了对不同容器的访问方式 配合<algorithm> 中的泛型算法
+
+
+
 ## vector
 - vector 动态大小 可以随意增删元素的数组替代品 向量
 `vector <int> v;` 空数组
