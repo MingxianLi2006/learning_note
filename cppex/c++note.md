@@ -3805,30 +3805,311 @@ cat error.log
 ```
 
 ## assert
+- when you want to check some arguments but don't want to leak some details of you program to users.
 - assert 是用来做运行时断言的宏 在调试阶段检查某个条件是否成立 不成立就立刻中断程序并报错
 - assert is a function-like macro in <asset.h> and <cassert>
+### Definition
+
 ```cpp
 #ifdef NDEBUG
-#define assert(condition) ((void)0)
+#define assert(condition) ((void)0)	//do nothing
 #else
 #define assert(condition) /*implementation defined*/
 #endif
 ```
+
 - Do nothing if the condition is true
 - Output diagnostic information and call abort() if the condition is false
 - If NDEBUG is defined, do nothing whatever the condition is
 - assert can be used only for debugging, be removed by a macro NDEBUG before releasing
  
 
+```cpp
 
+#include <iostream>
+//#define NDEBUG	used to delete assert
+#include <cassert>	//should be put after NDEBUG
+int main(argc,char** argv)
+{
+	assert(argc==2);	//check if argc==2 if not stop the program and print out the information of mistake
 
+	std::cout<<"This is an assert example."<<std::endl;
+	return 0;
 
+}
+```
+- We can alse use cmd to avoid assert
+```bash
+#To avoid assert
+g++ assert.cpp -DNDEBUG
+#-D means defining a macro
+```
+### assert in openCV
+- Many applications define their own assert macros
+- CV_Assert in OpenCV checks a condition at runtime and shows exception if it fails
+```cpp
+#define CV_Assert(expr) do {if(!!(expr)); else cv::error(cv::Error::StsAssert, #expr,CV_Func,__FILE__,__LINE__);}while(0)
+```
+- cv::error() may behavior differently with different settings
+```cpp
+void cv::error(	int				_code,
+				const String&	_err,
+				const char*		_func,
+				const char*		_file,
+				int				_line				
+				)
+```
+## Exception
+### Error Handking
+- Solution 1:Kill the program when error occurs
+```cpp
+float ratio(float a,float b)
+{
+	if(fabs(a+b)<FLT_EPSILON)
+	{
+		std::cerr<<"Error ..."<<std::endl;
+		std::abort();
+	}
 
+	return (a-b)/(a+b);
+}
 
+```
+- Not a good solution. It will kill the program just because a small mistake
 
+- solution 2:Tell the caller by the return value when error occurs
+- We have to use the 3rd parameter to send the result
+```cpp
+bool ratio(float a,float b,float & c)
+{
+	if(fabs(a+b)<FLT_EPSILON)
+	{
+		std::cerr<<"Error ..."<<std::endl;
+		return false;
+	}
 
+	c=(a-b)/(a+b)
+	return true;
+}
+```
 
+- solution 3:Throw exceptions(cpp feature)
+```cpp
+#include<iostream>
+#include<stdlib>
+#include<cfloat>
+float ratio(float a,float b)
+{
+	if(fabs(a+b)<FLT_EPSILON)
+			throw "The sum of the two arguments is close to zero.";	//if throw executed, the rest part of the function won't execute
+	return (a-b)/(a+b);
+}
+int main(){
+	float x=0.f;
+	float y=0.f;
+	float z=0.f;
+	std::cout<<"Please input two numbers <q to quit>:";
+	while(std::cin>>x>>y)
+	{
+		{//try and catch
+			try{
+		z=ratio(x,y);
+		std::cout<<z<<std::endl;
+		}
+		catch(const char* msg)	//catch the error
+		{
+		std::cerr<<"Call the ratio() failed"<<msg<<std::endl;
+		std::cerr<<"I give you another chance."<<endl;
+		}
+		}
+	return 0;
+		
+	}
+}
+//the loop will continue after printing our the error message
+//if throw but no catch, the program will be killed
+```
+## More About Exceptions
 
+### Handling Exceptions
+- A try block can be followed by multiple catch blocks.
+```cpp
+float ratio(float a,float b)
+{
+	if(a<0)
+		throw 1;
+	if(b<0)
+		throw 2;
+	if(fbas(a+b)<FLT_EPSILON)
+		throw"Error...";
+	return (a-b)/(a+b);
+}
+
+int main()
+{
+	float x=0.f;
+	float y=0.f;
+	float z=0.f;
+
+	std::cout<<"Please input two numbers <q to quit>:";
+	while(std::cin>>x>>y)
+	{
+		try{
+			z=ratio(x,y);
+			std::cout<<"ratio("<<x<<","<<y<<","<<y<<")="<<z<<std::endl;
+		}
+	catch(const char* msg)
+	{
+		std::cerr<<"Call the ratio() failed: "<<msg<<std::endl;
+	}
+	catch(int eid)
+	{
+		if(eid==1)
+			std::cerr<<"Call ratio() failed: the 1st argument should be positive."<<std::endl;
+		else if(eid==2)
+			std::cerr<<"Call ratio() failed: the 2nd argument should be positive"<<std::endl;
+		else
+			std::cerr<<"Call ratio() failed: unrecognized error code."<<std::endl;
+
+		std::cerr<<"I give you another chance."<<std::endl;
+	}
+	}
+	return 0;
+}
+```
+### Stack Unwinding
+- If an exception is not handled in the function, throw it to the caller.
+- If the caller does not handle, throw it to thte caller of the caller, or until main()
+```cpp
+float ratio(float a,float b)
+{
+	if(a<0)
+		throw 1;
+	if(b<0)
+		throw 2;
+	if(fbas(a+b)<FLT_EPSILON)
+		throw"Error...";
+	return (a-b)/(a+b);
+}
+
+float ratio_wrapper(float a, float b)
+{
+	try{
+		return ratio(a,b);
+	}
+	catch(int eid){...}
+	return 0;
+
+}
+int main()
+{
+	float x=0.f;
+	float y=0.f;
+	float z=0.f;
+
+	try{
+		z=ratio_wrapper(x,y);
+	}
+	catch(const char* msg)
+	{...}
+}
+//throw out the error until it is catched
+```
+### Catch-all Handler
+- If an exception is not caught, it will reach to the top caller, and terminate the program
+- A catch-all handler can catch all kinds of exceptions
+
+```cpp
+int main()
+{
+	runSomething1();
+	try{
+		runSomething2();
+	}
+	runSomethings3();
+	
+	catch(...)	//just three points
+	{
+		std::cerr<<"Unrecognized Exceotion"<<std::endl;
+	}
+	return 0;
+}
+```
+
+### Exceptions and Inheritance
+- If an object is thrown, and its class is derived from another class
+- An exception handler with the base class type can catch the exception
+
+```cpp
+try
+{
+	throw Derived();
+}
+catch(const Base& base)
+{
+	std::cerr<<"I caught Base."<<std::endl;
+}
+catch(const Derived& derived)
+{//Never reach here Never catch
+	std::cerr<<"I caught Derived"<<std::endl;
+}
+```
+### std::exception
+- std::exception is a class which can be a base class to any exception
+- Function std::exception::what can be overided to return a C-style string message
+- Defined in <exception>
+```cpp
+namespace std{
+	class logic_error;
+	class domain_error;
+	class invaid_argument;
+	...
+}
+
+//Class std::logic_error
+namespace std{
+	class logic_error : public exception{
+		public:
+			explicit logic_error(const string& what_arg);
+			exolicit logic_error(const char* what_arg);
+	};
+}
+```
+### Exception Specification and noexcept
+- The noexcept specifier defines a function which will not throw anything
+- The noexcept specifier defines a function which will not throw anything.
+```cpp
+void foo() noexcept;	//this function is non-throwing
+```
+
+## nothrow
+### nothrow new
+- std::nothrow is a const to select a non-throwing allocation function
+- If applying for RAM failed, it will throw.
+```cpp
+#include<stdlib>
+#include<iostream>
+using namespace std;
+int *p=NULL;
+size_t length=80000000000L;
+try{	//may throw an exception
+	p=new(nothrow) int[length];	//no throwing
+	cout<<"No exception"<<endl;
+}
+catch (std::bad_alloc& ba)
+{
+	cerr<<ba.what()<<endl;
+}
+//not throw an exception
+p=new(nothrow) int[length];	
+if(p)	//if failed, p=NULL
+	cout<<"Memory successfully allocated"<<endl;
+else 
+	cout<<"So bad, null pointer."<<endl;
+
+```
+# 15
+### Friend Classes
 
 
 # STL标准模板库
