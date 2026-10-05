@@ -3330,7 +3330,28 @@ p->print();
 delete p; //只调用父类的析构函数
 
 ```
+- virtual is used to provide a interface 
+- enable polymorphism
+```cpp
+class Animal {
+public:
+    virtual void speak() { cout << "动物在叫" << endl; } // 加上 virtual
+};
 
+class Dog : public Animal {
+public:
+    void speak() override { cout << "汪汪汪" << endl; }  // 重写
+};
+int main() {
+    Dog dog;
+    Animal* ptr = &dog;
+    
+    ptr->speak();  // 现在输出什么？
+}
+					//汪汪汪
+
+```
+- 多态：同一个接口（ptr->speak()），根据实际对象的不同，表现出不同的行为。
 ## Inheritance and Dynamic Memory Allocation
 - If a base class uses dynamic memory allocation, and redefines a copy constructor and assignment operator
 
@@ -4109,8 +4130,405 @@ else
 
 ```
 # 15
-### Friend Classes
+## Friend Classes
+### friend Functions
+- A friend function is defined out of the class
+- No MyTime:: before its function name
+```cpp
+class MyTime
+{
+	//...
+	public:
+		friend MyTime operator+(int m,const MyTime & t);
+};
+MyTime operator+(int m,const MyTime & t)	//friend function can access the private members of a class
+{
+	return t+m;
+}
+```
+### friend Classes
+- A class is a friend of another class
+- The friend class can access all members even private memebers
+- A friend class can be public, protected and private
+```cpp
+class Sniper
+{
+	private:
+		int bullets;
+	public:
+		Sniper(int bullets=0);
+		friend class SUpplier;
+};
+class Supplier
+{
+	int storage;
+	public:
+		Supplier(int storage=1000){};
+		bool provide(Sniper & sniper)
+		{
+			//bullets is a private member
+			if(sniper.bullets<20)	//no enough bullets
+			{
+				if(this->storage>100)
+				{
+					sniper.bullets+=100;
+					this->storage-=100;
+				}
+				else if(this->storage>0)
+				{
+					sniper.bullets+=this->storage;
+					this->storage=0;
+				}
+				else
+					return false;
+			}
+			cout<<"sniper has"<<sniper.bullets<<"bullets now."<<endl;
+		}
+};
 
+int main()
+{
+	Sniper sniper(2);
+	Supplier supplier(2000);
+	supplier.provide(sniper);
+	return 0;
+}
+```
+
+### friend Member Functions
+- A single member function of a class is a friend	//一个类的单个成员函数（也可以）是友元。
+- Different from friend functions	//普通的友元函数是一个全局函数（不属于任何类），只是在类里声明了一下。而现在讨论的这个函数，是属于另一个类（类B）的成员函数。
+- But very similar to a normal friend function
+- But... declaration problem...
+- TO reduce the permissions of friend classes
+```cpp
+class Supplier
+{
+	...
+}
+class Sniper
+{
+	private:
+		int bullets;
+	public:
+		Sniper(int bullets=0):bullets(bullets){}
+		friend bool Supplier::provide(Sniper & sniper);
+		//only function Supplier can access private members 
+};
+
+```
+- Then we can find that the function need Supplier and Sniper both, then the compilation will fail.
+```cpp
+//Solution
+class Sniper;
+
+class Supplier		//declaration first
+{
+		int storage;
+	public:
+		Supplier(int storage=1000):storage(storage){}
+		bool provide(Sniper & sniper);
+};
+
+class Sniper
+{
+	private:
+		int bullets;
+	public:
+		Sniper(int bullets=0):bullets(bullets){}
+		friend bool Supplier::provide(Sniper & sniper);
+};
+
+bool Supplier::provide(Sniper & sniper)
+{
+	//bullets is a private member
+	//Definition of the function
+}
+```
+- 先声明，后定义 将复杂的友元函数定义放到最后
+## Nested Types
+### Nested Enumerations
+- enum DataType is only used in class Mat, we can put it inside of Mat
+```cpp
+#include<iostream>
+enum DataType
+{
+	TYPE8U,
+	TYPE8S,
+	TYPE32F,
+	TYPE64F		
+};
+class Mat
+{
+	private:
+		DataType type;
+		void * data;
+	public:
+		Mat(DataType type):type(type),data(NULL){}
+		DataType getType() const{return type;}
+};
+int main()
+{
+	Mat image(TYPE8U);
+
+	if(image.getType()==TYPE8U)
+		std::cout<<"This is an 8U matrix."<<std::endl;
+	
+	return 0;
+}
+```
+- It can be accessed outside of the class, but with the class name scope qualifier
+```cpp
+class Mat
+{
+	public:
+		enum DataType
+		{...};			//Designed for Mat
+	private:
+		DataType type;
+		void* data;
+	public:
+		Mat(DataType type):type(type),data(NULL){}
+		DataType getType() const{return type;}
+};
+int main()
+{
+	Mat image(Mat::DataType::TYPE8U);
+
+	if(image.getType()==Mat::DataType::TYPE8U)
+		std::cout<<"This is an 8U matrix."<<std::endl;
+	
+	return 0;
+}
+```
+### Nested Classes
+- Nested classes: The declaration of a class/struct or union may appear inside another class
+```cpp
+class Storage
+{
+	public:
+		class Fruit		//only used in class Storage
+		{
+			string name;
+			int weight;
+		
+	public:
+		Fruit(string name="",int weight=0);
+		string getInfo(){return name + ", weight " + to_string(weight) + "kg."};
+		};
+		private:
+			Fruit fruit;
+		public:
+			Storage(Fruit f);
+			{
+				this->fruit = f;
+			}
+			void print()
+			{
+				cout<<fruit.getInfo()<<endl;
+			}
+};
+int main()
+{
+	Storage::Fruit apple("aplle,100");
+	Storage mystorage(apple);
+	mystorage.print();
+
+	return 0;
+}
+```
+### Nested Types:Scope
+- private:only visible to the contaning class
+- Protected:visible to the containing class and its derived class
+- Public: visible to the containing class, to its derived classes, and to the outside world
+
+## RTTI and Type Cast Operators
+### Runtime Type Identification
+- We can convert a pointer explicitly to another, even it isn't appropriate
+- How to convert safely?
+```cpp
+class Person;
+class Student: public Person;
+
+Person person("Yu")
+Student student("Sam","20210212");
+Person* pp=&student;
+Person& rp=student;
+Student * ps=(Student*) &person;//danger
+
+```
+```cpp
+#include<iostream>
+using namespaace std;
+class Person
+{
+	protected:
+		string name;
+	public:
+		Person(string name=""):name(name){};
+		virtual ~Person(){}
+		string gerInfo(){return name;}
+};
+
+class Student:public Person
+{
+		string studentid;
+	public:
+		Student(string name="",string sid=""):Person(name),student(sid){}
+		string getInfo(){return name+":"+studentif;}
+};
+int main()
+{
+	Person person("Yu");
+	Student student("Sam","20210212");
+	Person* pp=&student;
+	Person& rp=student;
+	Student * ps=(Student*)&person;	//danger!
+	cout<<person.getInfo()<<endl;
+	cout<<ps->getInfo()<<endl;		//will use the function in the subclass if getInfo in the Base is virtual
+									//danger if getInfo is not virtual
+									//越界访问
+}
+
+```
+- Use Runtime type identification
+- The type of an object to be determined during runtime
+
+####  dynamic_cast 	
+```text
+//operator:conversion of polymorphic types  				
+//在运行时安全地把一个指针或引用从一个类型转换成另一个类型，主要用于多态类型之间的向下转型（downcast）。
+//前提： 基类必须含有虚函数（即必须是多态类型）。
+```
+
+```cpp
+Person* pp=NULL;
+Student* ps=NULL;
+ps=dynamic_cast<Student*>(&person);	//NULL	conversion failed, return a NULL Base cannot convert to Subclass
+pp=dynamic_cast<Person*>(&student)	//Conversion successfully 
+```
+```cpp
+class Animal {
+public:
+    virtual ~Animal() {}
+};
+
+class Dog : public Animal {
+public:
+    void bark() { cout << "Woof" << endl; }
+};
+
+class Cat : public Animal {
+public:
+    void meow() { cout << "Meow" << endl; }
+};
+
+int main() {
+    Animal* ptr = new Dog();
+
+    Dog* d = dynamic_cast<Dog*>(ptr);  // 成功，ptr 实际指向 Dog
+    Cat* c = dynamic_cast<Cat*>(ptr);  // 失败，返回 nullptr
+
+    if (d) d->bark();   // 输出 Woof
+    if (c) c->meow();   // 不会执行
+}
+```
+#### typeid 			
+```cpp
+const std::type_info& ti=typeif(expr)
+```
+```text
+//operator: Identify the exact type of an object
+//determine whether two objects are the same type
+//Accept: the name of a class, an expression that evaluates to an object
+```
+```cpp
+#include <typeinfo>
+
+Animal* ptr = new Dog();
+
+cout << typeid(*ptr).name() << endl;   // 输出类似 "3Dog"
+cout << typeid(ptr).name() << endl;    // 输出类似 "P6Animal"
+
+// 比较类型
+if (typeid(*ptr) == typeid(Dog)) {
+    cout << "It's a Dog!" << endl;
+}
+```
+type_info		//class. the type information returned by the typeid operator
+```cpp
+#include <typeinfo>
+#include <iostream>
+
+int main() {
+    const std::type_info& ti = typeid(int);
+    std::cout << ti.name() << std::endl;  // 输出 "i"（GCC）或 "int"（MSVC）
+}
+```
+
+```cpp
+
+int main()
+{
+    string s("hello");
+
+    cout << "typeid.name of s          is " << typeid(s).name() << endl;
+    cout << "typeid.name of std::string is " << typeid(std::string).name() << endl;
+    cout << "typeid.name of Student     is " << typeid(Student).name() << endl;
+
+    if(typeid(std::string) == typeid(s))
+        cout << "s is a std::string object." << endl;
+
+    return 0;
+}
+```
+
+### More types about cast
+#### const_cast
+- Type cast for const or volatile value
+```cpp
+int main()
+{
+    int value1 = 100;
+    const int value2 = 200;
+    cout << "value1 = " << value1 << endl;
+    cout << "value2 = " << value2 << endl;
+
+    int * pv1 = const_cast<int *>(&value1);
+    int * pv2 = const_cast<int *>(&value2);
+
+    (*pv1)++;	//101
+    (*pv2)++;	//value2 won't be modified! still 200
+	//int& v2=const_cast<int&>(value 2);
+	//v2++;
+	//Also don't change the calue
+    cout << "value1 = " << value1 << endl;
+    cout << "value2 = " << value2 << endl;
+}
+	//You cannot change the value through the pointer, but you can change *pv2's value
+```
+#### static_cast:
+- It's valid only if type_name can be converted implicitly to the same type that expression has, or vice versa
+- Otherwise, the type cast is an error
+```cpp
+Base * pB=static_cast<Base*>(derived);	//valid
+Derived * pD=static_cast<Derived*>(base);	//valid
+UnRelated * pU=static_cast<UnRelated*>(base);	//invalid
+```
+#### reubterpret_cast
+- Converts between types by reinterpreting the underlying bit pattern
+```cpp
+int i = 18;
+float * p1=reinterpret_cast<float *>(i);//static_cast will fail
+int *p2=reinterpret_cast<int*>(p1);
+//just like the conversion in C
+```
+ 
+# Appendix 1 Code Optimization:1 Register and Cache
+## Computer Memory Hierachy
+- Register
+- Cache
+- Memory 
 
 # STL标准模板库
 - stl是Standard Template Library标准模板库 是C++标准库的核心组成部分
