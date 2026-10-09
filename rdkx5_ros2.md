@@ -262,4 +262,172 @@ source 是 Linux 里的一个命令，它的作用用一句话说就是：
 ```
 
 # C++Node 和 rclcpp 基础
+## rclcpp在c++中是什么？
+1. library
+- ROS Client Library for C++
+- ROS2提供给C++开发者的工具箱，封装了C语言的rcl接口和DDS中间件
+2. 命名空间Namespace
+- 在C++代码中rclcpp是一个顶层命名空间
+- eg1. rclcpp::Node, rclcpp::Publisher, Node和Publisher是rclcpp中的类
+- eg2. rclcpp::init(), rclcpp::spin(), init()和spin()是定义在rclcpp中的全局函数
+## ROS2中的Node详解
+- Node 对象可以作为发布者 订阅者 服务端 客户端
+- Node 对象作为发布者和服务端使用时，以回调的方式获取消息
+```cpp
+rclcpp::Node::SharedPtr node;
+//  ^^^^^^  ^^^^  ^^^^^^^^^
+//    (1)    (2)     (3)
+```
+- (1) `rclcpp::Node` 左边rclcpp是命名空间 Node是命名空间中的一个类
+- (2) `Node::SharePtr` SharePtr是Node类内部定义的一个类型别名
+```cpp
+//SharePtr为何物
+class Node {
+public:
+    using SharedPtr = std::shared_ptr<Node>;  //指向Node类的shared_ptr
+    // ...
+};
+```
 
+### 快速判断
+- 看 :: 左边那个名字：
+- 如果是小写、像包名/模块名的（rclcpp、std、std_msgs、msg）→ 通常是命名空间。
+- 如果是大写开头、像类型名的（Node、Publisher、String）→ 通常是类。
+- 这只是命名习惯，不是语法规则，但 ROS 2 和标准库基本都遵守。
+```cpp
+rclcpp::Node                    // 节点类
+rclcpp::Publisher<T>            // 发布者模板类
+rclcpp::Subscription<T>         // 订阅者模板类
+rclcpp::Service<T>              // 服务端类
+rclcpp::Client<T>               // 客户端类
+rclcpp::TimerBase               // 定时器基类
+rclcpp::Executor                // 执行器基类
+rclcpp::SingleThreadedExecutor  // 单线程执行器
+rclcpp::MultiThreadedExecutor   // 多线程执行器
+rclcpp::Logger                  // 日志器类
+rclcpp::Parameter               // 参数类
+rclcpp::CallbackGroup           // 回调组类
+rclcpp::Context                 // 上下文类
+...
+//rclcpp中的类和模板类
+```
+
+```cpp
+//Node类常用的成员函数
+class Node_ {
+public:
+    // 构造函数：指定节点名称，可选指定命名空间
+    explicit Node(const std::string & node_name,
+                  const std::string & namespace_ = "");
+
+    // 创建发布者 (Publisher)
+    template <typename MessageT>
+    typename Publisher<MessageT>::SharedPtr
+    create_publisher(const std::string & topic_name, size_t qos_depth);
+
+    // 创建订阅者 (Subscription)
+    template <typename MessageT, typename CallbackT>
+    typename Subscription<MessageT>::SharedPtr
+    create_subscription(const std::string & topic_name,
+                        size_t qos_depth, CallbackT && callback);
+
+    // 创建定时器 (Timer) - 基于系统时钟
+    TimerBase::SharedPtr
+    create_wall_timer(std::chrono::nanoseconds period,
+                      std::function<void()> callback);
+
+    // 创建服务端 (Service Server)
+    template <typename ServiceT, typename CallbackT>
+    typename Service<ServiceT>::SharedPtr
+    create_service(const std::string & service_name, CallbackT && callback);
+
+    // 创建客户端 (Service Client)
+    template <typename ServiceT>
+    typename Client<ServiceT>::SharedPtr
+    create_client(const std::string & service_name);
+
+    // 获取节点专属的日志记录器 (Logger)
+    rclcpp::Logger get_logger() const;
+
+    // 获取节点名称
+    const char * get_name() const;
+
+    // 获取节点的时钟 (用于时间同步)
+    rclcpp::Clock::SharedPtr get_clock();
+};
+```
+# Spin函数原理
+### Node为什么能收发消息？是否自动？
+
+1. Node类是一个"通信实体的载体"
+- rclcpp::init()使得底层DDS自动接管网络发现和数据路由
+2. Node对象调用API创建通信对象
+- 发送`auto pub=node->create_publisher<MSgType>("topic_name",10);`  
+在代码中显式调用pub->publish(msg) 将msg代表的消息发送出去
+- 接收：`auto sub=node->create_subscription<MsgType>("topic_name",10,callback);`  
+当消息到达时，DDS会自动把他放到结点的接收队列  
+结点通过回调函数callback接收订阅的消息（回调函数可以是全局/成员/Lambda函数）  
+Executor执行器通过rclcpp::spin(node)来不断轮询队列，取出消息msg并触发回调callback
+
+## rclcpp::spin(node) 函数调用
+- spin()是ROS2节点的事件循环驱动器，没有它，节点不执行回调
+- spin()默认情况下是无限阻塞的，满足特定条件时会返回
+
+| 触发方式 | 具体场景 | 底层原理 |
+| :--- | :--- | :--- |
+| 外部信号 | 用户在终端按下 Ctrl+C | ROS 2 底层注册了信号处理函数，捕获 SIGINT 后自动调用 rclcpp::shutdown()，导致 spin() 退出。 |
+| 内部主动关闭 | 在节点的某个回调函数中，或者在另一个线程里调用了 rclcpp::shutdown() | 全局上下文被销毁，Executor 发现上下文无效，主动结束 spin 循环。 |
+| 节点被取消/销毁 | 节点从 Executor 中被移除，或节点的智能指针引用计数归零被销毁 | Executor 发现没有需要管理的节点了，循环自然结束。 |
+
+### 原理解析
+### Node 应用代码
+*   `create_wall_timer(...)`
+    *   注册回调 + 绑定函数
+*   `create_subscription(...)`
+    *   注册回调 + 绑定函数
+*   `create_service(...)`
+    *   注册回调 + 绑定函数
+
+⬇️ (注册到 ROS 2 运行时)
+
+### ROS 2 运行时
+*   **定时器队列**
+    *   `callback_1, [500ms]`
+*   **订阅队列**
+    *   `callback_2, [msg1, msg2]`
+*   **服务队列**
+    *   `callback_2, [req1, req2]`
+
+⬇️
+
+### 事件循环
+`rclcpp::spin(node);` ➔ Executor 事件循环
+
+```cpp
+while (rclcpp::ok())
+{
+    1. 检查所有队列，找到“就绪”的回调
+    2. 取出回调，执行对应的函数
+    3. 继续循环...
+}
+```
+
+- `rclcpp::spin(node)`的本质就是一个不停轮询各个节点队列的循环，当发现队列不为空时，调用对应的回调函数
+- 本质：创建一个SingleThreadedExecutor 然后把node交给他，开始无限循环执行回调
+```cpp
+rclcpp::spin(node);
+//等价于
+auto executor=std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+//创建一个执行器
+executor->add_node(node);
+
+executor->spin(); //内部就是一个while循环，不断调度回调
+```
+### rclcpp::spin(node)家族成员
+| 函数变体 | 阻塞特性 | 核心应用场景 |
+| :--- | :--- | :--- |
+| `spin(node)` | **无限阻塞** | 90% 的常规节点（如纯话题通信、定时器节点），直接托管给 ROS 2。 |
+| `spin_some(node)` | **非阻塞（瞬时返回）** |观察消息队列里是否有消息，有则一次性取出并执行，如有新消息则不理会。 需要与外部事件循环（如 UI 框架、自定义 while 循环）融合的场景。 |
+| `spin_all(node, time)` | **限时阻塞** |只循环time指定的时间，没处理完也返回。 需要在一个时间窗口内尽可能多地处理积压回调。 |
+
+# 日志打印与智能指针应用
