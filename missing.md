@@ -149,6 +149,7 @@ find ~/Downloads -type f -size +100M -exec ls -lh {} \；
 # -exec在此意为 符合 type为file size>100M的文件，执行以下程序
 # -l意为more information 显示读写执行权限
 # -h意为以人类可读的格式显示文件大小
+# -a可显示被隐藏的程序
 # {} 被替换为找到的路径 占位符
 #  \;表明程序结束  后面可加-mtime之类的参数用于筛选文件
 
